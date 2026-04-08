@@ -3,11 +3,15 @@ import { View, StyleSheet, Text, Alert } from 'react-native';
 import { COLORS } from '../styles/theme';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../navigation/types';
 
 export function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
     function handleLogin() {
         if (!email || !password) {
@@ -18,6 +22,7 @@ export function Login() {
         setError(null);
         console.log(`Login realizado com: ${email} - ${password}`);
         Alert.alert("Sucesso", "Login simulado com sucesso!");
+        navigation.replace("Dashboard");
     }
 
     return (
