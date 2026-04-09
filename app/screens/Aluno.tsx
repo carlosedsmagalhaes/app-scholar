@@ -8,7 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 
-export function CadastroAluno() {
+export function Aluno() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [nome, setNome] = useState("");
   const [matricula, setMatricula] = useState("");
@@ -24,8 +24,9 @@ export function CadastroAluno() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (cep.length === 8) {
-      consultarCep(cep)
+    const sanitizedCep = cep.replace(/[^0-9]/g, "");
+    if (sanitizedCep.length === 8) {
+      consultarCep(sanitizedCep)
         .then((data) => {
           setEndereco(data.logradouro || "");
           setBairro(data.bairro || "");
@@ -76,6 +77,7 @@ export function CadastroAluno() {
     setBairro("");
     setCidade("");
     setEstado("");
+    setError(null);
     navigation.goBack();
   }
 
