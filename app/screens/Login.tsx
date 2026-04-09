@@ -15,7 +15,7 @@ export function Login() {
 
     function handleLogin() {
         if (!email || !password) {
-            setError('Pro favor, preencha todos os campos.');
+            setError('Por favor, preencha todos os campos.');
             return;
         }
 

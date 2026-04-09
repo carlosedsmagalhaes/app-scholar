@@ -2,8 +2,12 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { MenuCard } from "../components/MenuCard";
 import { COLORS } from "../styles/theme";
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../navigation/types';
 
 export function Dashboard() {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Bem-vindo ao App Scholar!</Text>
@@ -13,7 +17,7 @@ export function Dashboard() {
         <MenuCard
           title="Alunos"
           onPress={() => {
-            console.log("Alunos");
+            navigation.navigate("CadastroAluno");
           }}
         />
         <MenuCard
@@ -59,7 +63,5 @@ const styles = StyleSheet.create({
   menuGrid: {
     width: "100%",
     flexDirection: "column",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
   },
 });

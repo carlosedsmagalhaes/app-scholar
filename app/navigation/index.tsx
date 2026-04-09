@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { Login } from "../screens/Login";
 import { Dashboard } from "../screens/Dashboard";
+import { CadastroAluno } from "../screens/CadastroAluno";
 import { RootStackParamList } from "./types";
 import { COLORS } from "../styles/theme";
 
@@ -28,6 +29,11 @@ export function Routes() {
           name="Dashboard" 
           component={Dashboard} 
           options={{ title: 'App Scholar' }} 
+        />
+        <Stack.Screen 
+          name="CadastroAluno" 
+          component={CadastroAluno} 
+          options={{ title: 'Cadastro de Aluno' }} 
         />
       </Stack.Navigator>
     </NavigationContainer>

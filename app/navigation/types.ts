@@ -1,7 +1,7 @@
 export type RootStackParamList = {
   Login: undefined;
   Dashboard: undefined;
-  Alunos: undefined;
+  CadastroAluno: undefined;
   Professores: undefined;
   Disciplinas: undefined;
   Boletim: undefined;
