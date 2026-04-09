@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView, StyleSheet, View, Alert } from "react-native";
+import { ScrollView, StyleSheet, View, Alert, Text } from "react-native";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import { COLORS } from "../styles/theme";
@@ -7,12 +7,14 @@ import { consultarCep } from "../services/cepService";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
+import { Dropdown } from "react-native-element-dropdown";
 
 export function Aluno() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [nome, setNome] = useState("");
   const [matricula, setMatricula] = useState("");
   const [curso, setCurso] = useState("");
+  const [isFocus, setIsFocus] = useState(false);
   const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
   const [cep, setCep] = useState("");
@@ -22,6 +24,13 @@ export function Aluno() {
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  const cursoDados = [
+    { label: "ADS", value: "ADS" },
+    { label: "DSM", value: "DSM" },
+    { label: "Geoprocessamento", value: "Geoprocessamento" },
+    { label: "Meio Ambiente", value: "Meio Ambiente" },
+  ];
 
   useEffect(() => {
     const sanitizedCep = cep.replace(/[^0-9]/g, "");
@@ -97,15 +106,35 @@ export function Aluno() {
         placeholder="Digite a matrícula"
         keyboardType="numeric"
         errorMessage={error && matricula === "" ? error : null}
+      />
 
-      />
-      <Input
-        label="Curso"
-        value={curso}
-        onChangeText={setCurso}
-        placeholder="Digite o curso"
-        errorMessage={error && curso === "" ? error : null}
-      />
+      <View style={styles.container}>
+        <Text style={styles.labelPersonalizada}>Curso</Text>
+
+        <Dropdown
+          style={[
+            styles.dropdown,
+            isFocus && { borderColor: COLORS.primary },
+            error && curso === "" && { borderColor: COLORS.error },
+          ]}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          data={cursoDados}
+          maxHeight={300}
+          labelField="label"
+          valueField="value"
+          placeholder={!isFocus ? "Selecione o curso" : "..."}
+          value={curso}
+          onFocus={() => setIsFocus(true)}
+          onBlur={() => setIsFocus(false)}
+          onChange={(item) => {
+            setCurso(item.value);
+            setIsFocus(false);
+          }}
+        />
+        {error && curso === "" && <Text style={styles.errorText}>{error}</Text>}
+      </View>
+
       <Input
         label="Email"
         value={email}
@@ -172,5 +201,34 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
     paddingBottom: 40,
+  },
+  dropdown: {
+    height: 55,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    backgroundColor: COLORS.white,
+    marginBottom: 5,
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 12,
+    marginBottom: 10,
+    marginLeft: 2,
+  },
+  labelPersonalizada: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: COLORS.text,
+    marginBottom: 5,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: "#999",
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: COLORS.text,
   },
 });
