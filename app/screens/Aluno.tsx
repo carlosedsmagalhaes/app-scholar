@@ -7,7 +7,7 @@ import { consultarCep } from "../services/cepService";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
-import { Dropdown } from "react-native-element-dropdown";
+import { Select } from "../components/Select";
 
 export function Aluno() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -108,32 +108,14 @@ export function Aluno() {
         errorMessage={error && matricula === "" ? error : null}
       />
 
-      <View style={styles.container}>
-        <Text style={styles.labelPersonalizada}>Curso</Text>
-
-        <Dropdown
-          style={[
-            styles.dropdown,
-            isFocus && { borderColor: COLORS.primary },
-            error && curso === "" && { borderColor: COLORS.error },
-          ]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          data={cursoDados}
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          placeholder={!isFocus ? "Selecione o curso" : ""}
-          value={curso}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={(item) => {
-            setCurso(item.value);
-            setIsFocus(false);
-          }}
-        />
-        {error && curso === "" && <Text style={styles.errorText}>{error}</Text>}
-      </View>
+      <Select
+        label="Curso"
+        data={cursoDados}
+        value={curso}
+        onChange={setCurso}
+        placeholder="Selecione o curso"
+        errorMessage={error && curso === "" ? error : undefined}
+      />
 
       <Input
         label="Email"

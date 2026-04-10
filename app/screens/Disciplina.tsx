@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ScrollView, StyleSheet, View, Alert, Text } from "react-native";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
+import { Select } from "../components/Select";
 import { COLORS } from "../styles/theme";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -86,85 +87,32 @@ export function Disciplina() {
         keyboardType="numeric"
         errorMessage={error && cargaHoraria === "" ? error : null}
       />
-      <View>
-        <Text style={styles.labelPersonalizada}>Professor</Text>
-        <Dropdown
-          style={[
-            styles.dropdown,
-            focusField === "professor" && { borderColor: COLORS.primary },
-            error && professor === "" ? { borderColor: "red" } : null,
-          ]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          data={professorDados}
-          labelField="label"
-          valueField="value"
-          placeholder={
-            focusField !== "professor" ? "Selecione o professor" : ""
-          }
-          value={professor}
-          onChange={(item) => {
-            setProfessor(item.value);
-            setFocusField(null);
-          }}
-          onFocus={() => setFocusField("professor")}
-          onBlur={() => setFocusField(null)}
-        />
-        {error && professor === "" && (
-          <Text style={styles.errorText}>{error}</Text>
-        )}
-      </View>
+      <Select
+        label="Professor"
+        data={professorDados}
+        value={professor}
+        onChange={setProfessor}
+        placeholder="Selecione o professor"
+        errorMessage={error && professor === "" ? error : undefined}
+      />
 
-      <View>
-        <Text style={styles.labelPersonalizada}>Curso</Text>
-        <Dropdown
-          style={[
-            styles.dropdown,
-            focusField === "curso" && { borderColor: COLORS.primary },
-            error && curso === "" ? { borderColor: "red" } : null,
-          ]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          data={cursoDados}
-          labelField="label"
-          valueField="value"
-          placeholder={focusField !== "curso" ? "Selecione o curso" : ""}
-          value={curso}
-          onChange={(item) => {
-            setCurso(item.value);
-            setFocusField(null);
-          }}
-          onFocus={() => setFocusField("curso")}
-          onBlur={() => setFocusField(null)}
-        />
-        {error && curso === "" && <Text style={styles.errorText}>{error}</Text>}
-      </View>
-      <View>
-        <Text style={styles.labelPersonalizada}>Semestre</Text>
-        <Dropdown
-          style={[
-            styles.dropdown,
-            focusField === "semestre" && { borderColor: COLORS.primary },
-            error && semestre === "" ? { borderColor: "red" } : null,
-          ]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          data={semestreDados}
-          labelField="label"
-          valueField="value"
-          placeholder={focusField !== "semestre" ? "Selecione o semestre" : ""}
-          value={semestre}
-          onChange={(item) => {
-            setSemestre(item.value);
-            setFocusField(null);
-          }}
-          onFocus={() => setFocusField("semestre")}
-          onBlur={() => setFocusField(null)}
-        />
-        {error && semestre === "" && (
-          <Text style={styles.errorText}>{error}</Text>
-        )}
-      </View>
+      <Select
+        label="Curso"
+        data={cursoDados}
+        value={curso}
+        onChange={setCurso}
+        placeholder="Selecione o curso"
+        errorMessage={error && curso === "" ? error : undefined}
+      />
+
+      <Select
+        label="Semestre"
+        data={semestreDados}
+        value={semestre}
+        onChange={setSemestre}
+        placeholder="Selecione o semestre"
+        errorMessage={error && semestre === "" ? error : undefined}
+      />
       <Button title="Salvar" onPress={handleSalvar} />
     </ScrollView>
   );

@@ -35,7 +35,7 @@ export function Dashboard() {
         <MenuCard
           title="Boletim"
           onPress={() => {
-            console.log("Boletim");
+            navigation.navigate("Boletim");
           }}
         />
       </View>

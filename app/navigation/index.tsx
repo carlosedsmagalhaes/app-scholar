@@ -6,6 +6,7 @@ import { Dashboard } from "../screens/Dashboard";
 import { Aluno } from "../screens/Aluno";
 import { Professor } from "../screens/Professor";
 import { Disciplina } from "../screens/Disciplina";
+import { Boletim } from "../screens/Boletim";
 import { RootStackParamList } from "./types";
 import { COLORS } from "../styles/theme";
 
@@ -46,6 +47,11 @@ export function Routes() {
           name="Disciplina" 
           component={Disciplina} 
           options={{ title: 'Cadastro de Disciplina' }} 
+        />
+        <Stack.Screen 
+          name="Boletim" 
+          component={Boletim} 
+          options={{ title: 'Boletim' }} 
         />
       </Stack.Navigator>
     </NavigationContainer>
