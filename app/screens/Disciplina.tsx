@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView, StyleSheet, View, Alert, Text } from "react-native";
+import { ScrollView, StyleSheet, Alert } from "react-native";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import { Select } from "../components/Select";
@@ -7,16 +7,17 @@ import { COLORS } from "../styles/theme";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
-import { Dropdown } from "react-native-element-dropdown";
+import { useRoute, RouteProp } from "@react-navigation/native";
 
 export function Disciplina() {
+  const route = useRoute<RouteProp<RootStackParamList, "Disciplina">>();
+  const { id } = route.params || {};
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [nome, setNome] = useState("");
   const [cargaHoraria, setCargaHoraria] = useState("");
   const [professor, setProfessor] = useState("");
   const [curso, setCurso] = useState("");
   const [semestre, setSemestre] = useState("");
-  const [focusField, setFocusField] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const cursoDados = [
@@ -44,6 +45,24 @@ export function Disciplina() {
     { label: "9º Semestre", value: "9º Semestre" },
     { label: "10º Semestre", value: "10º Semestre" },
   ];
+
+  useEffect(() => {
+    if (id) {
+      const disciplinaData = {
+        nome: "Programacao Mobile",
+        cargaHoraria: "80",
+        professor: "Professor A",
+        curso: "ADS",
+        semestre: "4º Semestre",
+      };
+
+      setNome(disciplinaData.nome);
+      setCargaHoraria(disciplinaData.cargaHoraria);
+      setProfessor(disciplinaData.professor);
+      setCurso(disciplinaData.curso);
+      setSemestre(disciplinaData.semestre);
+    }
+  }, [id]);
 
   function handleSalvar() {
     if (!nome || !cargaHoraria || !professor || !curso || !semestre) {

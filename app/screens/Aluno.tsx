@@ -8,13 +8,15 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 import { Select } from "../components/Select";
+import { useRoute, RouteProp } from "@react-navigation/native";
 
 export function Aluno() {
+  const route = useRoute<RouteProp<RootStackParamList, "Aluno">>();
+  const { id } = route.params || {};
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [nome, setNome] = useState("");
   const [matricula, setMatricula] = useState("");
   const [curso, setCurso] = useState("");
-  const [isFocus, setIsFocus] = useState(false);
   const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
   const [cep, setCep] = useState("");
@@ -52,6 +54,36 @@ export function Aluno() {
       setEstado("");
     }
   }, [cep]);
+
+  useEffect(() => {
+    if (id) {
+      const alunoData = {
+        nome: "Carlos Pereira",
+        matricula: "20241001",
+        curso: "ADS",
+        email: "carlos.pereira@aluno.edu",
+        telefone: "(11) 99999-1234",
+        cep: "01001000",
+        endereco: "Praca da Se",
+        numero: "100",
+        bairro: "Se",
+        cidade: "Sao Paulo",
+        estado: "SP",
+      };
+
+      setNome(alunoData.nome);
+      setMatricula(alunoData.matricula);
+      setCurso(alunoData.curso);
+      setEmail(alunoData.email);
+      setTelefone(alunoData.telefone);
+      setCep(alunoData.cep);
+      setEndereco(alunoData.endereco);
+      setNumero(alunoData.numero);
+      setBairro(alunoData.bairro);
+      setCidade(alunoData.cidade);
+      setEstado(alunoData.estado);
+    }
+  }, [id]);
 
   function handleSalvar() {
     if (!nome || !matricula || !curso || !email) {

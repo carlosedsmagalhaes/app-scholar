@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { ScrollView, StyleSheet, View, Alert } from "react-native";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
@@ -6,8 +6,11 @@ import { COLORS } from "../styles/theme";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
+import { useRoute, RouteProp } from "@react-navigation/native";
 
 export function Professor() {
+  const route = useRoute<RouteProp<RootStackParamList, 'Professor'>>();
+  const { id } = route.params || {};
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [nome, setNome] = useState("");
   const [titulacao, setTitulacao] = useState("");
@@ -15,6 +18,23 @@ export function Professor() {
   const [tempoDocencia, setTempoDocencia] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (id) {
+      const professorData = {
+        nome: "André Olímpio",
+        titulacao: "Doutor",
+        areaAtuacao: "Computação",
+        tempoDocencia: "10 anos",
+        email: "andre.olimpio@university.edu",
+      };
+      setNome(professorData.nome);
+      setTitulacao(professorData.titulacao);
+      setAreaAtuacao(professorData.areaAtuacao);
+      setTempoDocencia(professorData.tempoDocencia);
+      setEmail(professorData.email);
+    }
+  }, [id]);
 
   function handleSalvar() {
     if (!nome || !titulacao || !areaAtuacao || !email) {

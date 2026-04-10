@@ -17,19 +17,19 @@ export function Dashboard() {
         <MenuCard
           title="Alunos"
           onPress={() => {
-            navigation.navigate("Aluno");
+            navigation.navigate("ListAluno");
           }}
         />
         <MenuCard
           title="Professores"
           onPress={() => {
-            navigation.navigate("Professor");
+            navigation.navigate("ListProfessor");
           }}
         />
         <MenuCard
           title="Disciplinas"
           onPress={() => {
-            navigation.navigate("Disciplina");
+            navigation.navigate("LisDisciplina");
           }}
         />
         <MenuCard
