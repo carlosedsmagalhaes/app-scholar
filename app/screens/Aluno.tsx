@@ -123,7 +123,7 @@ export function Aluno() {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? "Selecione o curso" : "..."}
+          placeholder={!isFocus ? "Selecione o curso" : ""}
           value={curso}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}

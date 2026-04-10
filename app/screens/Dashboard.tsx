@@ -29,7 +29,7 @@ export function Dashboard() {
         <MenuCard
           title="Disciplinas"
           onPress={() => {
-            console.log("Disciplina");
+            navigation.navigate("Disciplina");
           }}
         />
         <MenuCard
