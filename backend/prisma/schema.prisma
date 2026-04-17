@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id        Int @id @default(autoincrement())
+  email     String @unique
+  senha     String
+  perfil    String
+  aluno     Aluno?
+  professor Professor?
+}
+
+model Aluno {
+  id        Int @id @default(autoincrement())
+  nome      String
+  matricula String @unique
+  curso_id  Int
+  curso     Curso @relation(fields: [curso_id], references: [id]) 
+  usuario_id Int @unique 
+  usuario   Usuario @relation(fields: [usuario_id], references: [id])
+  telefone    String?
+  cep         String
+  logradouro  String?
+  numero      String?
+  bairro      String?
+  cidade      String?
+  estado      String?
+  complemento String?
+  notas       Notas[]
+}
+
+model Professor {
+  id             Int          @id @default(autoincrement())
+  nome           String
+  titulacao_id   Int
+  titulacao      Titulacao    @relation(fields: [titulacao_id], references: [id])
+  area_id        Int
+  area           Area         @relation(fields: [area_id], references: [id])
+  usuario_id     Int          @unique
+  usuario        Usuario      @relation(fields: [usuario_id], references: [id])
+  tempo_docencia Int?
+  disciplinas    Professor_Disciplina[]
+}
+
+model Disciplina {
+  id            Int      @id @default(autoincrement())
+  nome          String
+  carga_horaria Int
+  semestre      Int
+  notas         Notas[]
+  professores   Professor_Disciplina[]
+  cursos        Curso_Disciplina[]
+}
+
+model Notas {
+  id            Int        @id @default(autoincrement())
+  aluno_id      Int
+  aluno         Aluno      @relation(fields: [aluno_id], references: [id])
+  disciplina_id Int
+  disciplina    Disciplina @relation(fields: [disciplina_id], references: [id])
+  nota1         Decimal?   @db.Decimal(5, 2)
+  nota2         Decimal?   @db.Decimal(5, 2)
+  media         Decimal?   @db.Decimal(5, 2)
+  situacao      String?
+}
+
+model Curso {
+  id           Int        @id @default(autoincrement())
+  nome         String
+  qtd_semestre Int?
+  alunos       Aluno[]
+  disciplinas  Curso_Disciplina[]
+}
+
+model Titulacao {
+  id        Int         @id @default(autoincrement())
+  descricao String
+  professores Professor[]
+}
+
+model Area {
+  id        Int         @id @default(autoincrement())
+  descricao String
+  professores Professor[]
+}
+
+model Professor_Disciplina {
+  professor_id  Int
+  professor     Professor  @relation(fields: [professor_id], references: [id])
+  disciplina_id Int
+  disciplina    Disciplina @relation(fields: [disciplina_id], references: [id])
+
+  @@id([professor_id, disciplina_id])
+}
+
+model Curso_Disciplina {
+  curso_id      Int
+  curso         Curso      @relation(fields: [curso_id], references: [id])
+  disciplina_id Int
+  disciplina    Disciplina @relation(fields: [disciplina_id], references: [id])
+
+  @@id([curso_id, disciplina_id])
+}
