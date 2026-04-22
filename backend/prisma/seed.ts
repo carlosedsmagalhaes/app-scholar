@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Perfil } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const connectionString = process.env.DATABASE_URL;
@@ -60,7 +60,7 @@ async function main() {
     create: {
       email: "admin@gmail.com",
       senha: senhaHash,
-      perfil: "ADMIN",
+      perfil: Perfil.ADMIN,
     },
   });
 

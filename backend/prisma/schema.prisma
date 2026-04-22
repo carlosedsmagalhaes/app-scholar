@@ -6,11 +6,17 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Perfil {
+  ALUNO
+  PROFESSOR
+  ADMIN
+}
+
 model Usuario {
   id        Int @id @default(autoincrement())
   email     String @unique
   senha     String
-  perfil    String
+  perfil    Perfil
   aluno     Aluno?
   professor Professor?
 }
