@@ -45,7 +45,9 @@ Para iniciar o servidor que processará as requisições:
 ```bash
 npm init -y
 
-npm install -D typescript @types/node @types/express @types/pg @types/cors @types/jsonwebtoken ts-node-dev
+npm install express dotenv cors
+
+npm install -D @types/express @types/node
 
 npx tsc --init
 
@@ -57,6 +59,8 @@ npm install @prisma/client
 npx prisma init
 
 npx prisma migrate dev
+
+npx prisma db seed
 
 ```
 

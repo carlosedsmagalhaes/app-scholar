@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -72,6 +72,7 @@ model Notas {
 model Curso {
   id           Int        @id @default(autoincrement())
   nome         String
+  sigla        String?
   qtd_semestre Int?
   alunos       Aluno[]
   disciplinas  Curso_Disciplina[]
