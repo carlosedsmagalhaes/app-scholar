@@ -2,18 +2,7 @@ import { Request, Response } from "express";
 import prisma from "../database/db";
 import { Perfil } from "@prisma/client";
 import bcrypt from "bcryptjs";
-
-function validateAlunoId(id: string | string[] | undefined): number | null {
-  if (!id) {
-    return null;
-  }
-  const idParam = Array.isArray(id) ? id[0] : id;
-  const alunoId = Number.parseInt(idParam, 10);
-  if (Number.isNaN(alunoId)) {
-    return null;
-  }
-  return alunoId;
-}
+import { validateAlunoId } from "../utils/validateId";
 
 class AlunoController {
   async create(req: Request, res: Response) {
@@ -87,7 +76,7 @@ class AlunoController {
   async getAll(req: Request, res: Response) {
     try {
       const alunos = await prisma.aluno.findMany({
-        include: { usuario: true, curso: true },
+        include: { usuario: { select: { email: true } }, curso: true },
       });
       return res.status(200).json(alunos);
     } catch (error) {
@@ -107,7 +96,7 @@ class AlunoController {
 
       const aluno = await prisma.aluno.findUnique({
         where: { id: alunoId },
-        include: { usuario: true, curso: true },
+        include: { usuario: { select: { email: true } }, curso: true },
       });
 
       if (!aluno) {
@@ -145,7 +134,7 @@ class AlunoController {
 
       const alunoExistente = await prisma.aluno.findUnique({
         where: { id: alunoId },
-        include: { usuario: true },
+        include: { usuario: { select: { email: true } } },
       });
 
       if (!alunoExistente) {
