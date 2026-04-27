@@ -3,6 +3,7 @@ import AuthController from '../controllers/AuthController';
 import AlunoController from '../controllers/AlunoController';
 import ProfessorController from '../controllers/ProfessorController';
 import DisciplinaController from '../controllers/DisciplinaController';
+import NotasController from '../controllers/NotasController'; 
 
 const router = Router();
 
@@ -22,5 +23,8 @@ router.get('/api/disciplinas', DisciplinaController.getAll);
 router.get('/api/disciplinas/:id', DisciplinaController.getById);
 router.put('/api/disciplinas/:id', DisciplinaController.update);
 router.delete('/api/disciplinas/:id', DisciplinaController.delete);
+router.post('/api/notas', NotasController.upsert);
+router.get('/api/notas/aluno/:alunoId', NotasController.getByAluno);
+router.get('/api/notas/:id', NotasController.getById);
 
 export default router;
