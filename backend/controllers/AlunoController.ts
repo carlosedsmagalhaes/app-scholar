@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import prisma from "../database/db";
 import { Perfil } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { validateAlunoId } from "../utils/validateId";
+import { validateId } from "../utils/validateId";
 
 class AlunoController {
   async create(req: Request, res: Response) {
@@ -88,7 +88,7 @@ class AlunoController {
   async getById(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const alunoId = validateAlunoId(id);
+      const alunoId = validateId(id);
 
       if (alunoId === null) {
         return res.status(400).json({ message: "ID do aluno é obrigatório" });
@@ -113,7 +113,7 @@ class AlunoController {
   async update(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const alunoId = validateAlunoId(id);
+      const alunoId = validateId(id);
 
       if (alunoId === null) {
         return res.status(400).json({ message: "ID do aluno é obrigatório" });
@@ -174,7 +174,7 @@ class AlunoController {
   async delete(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const alunoId = validateAlunoId(id);
+      const alunoId = validateId(id);
 
       if (alunoId === null) {
         return res.status(400).json({ message: "ID do aluno é obrigatório" });

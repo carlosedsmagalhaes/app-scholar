@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import prisma from "../database/db";
 import { Perfil } from "@prisma/client";
 import bycript from "bcryptjs";
-import { validateAlunoId } from "../utils/validateId";
+import { validateId } from "../utils/validateId";
 
 class ProfessorController {
   async create(req: Request, res: Response) {
@@ -72,7 +72,7 @@ class ProfessorController {
   async getById(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const professorId = validateAlunoId(id);
+      const professorId = validateId(id);
       if (professorId === null) {
         return res.status(400).json({ message: "ID de professor inválido" });
       }
@@ -101,7 +101,7 @@ class ProfessorController {
   async update(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const professorId = validateAlunoId(id);
+      const professorId = validateId(id);
       if (professorId === null) {
         return res.status(400).json({ message: "ID de professor inválido" });
       }
@@ -153,7 +153,7 @@ class ProfessorController {
   async delete(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const professorId = validateAlunoId(id);
+      const professorId = validateId(id);
       if (professorId === null) {
         return res.status(400).json({ message: "ID de professor inválido" });
       }

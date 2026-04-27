@@ -1,12 +1,12 @@
-export function validateAlunoId(id: string | string[] | undefined): number | null {
+export function validateId(id: string | string[] | undefined): number | null {
   if (!id) {
     return null;
   }
   const idParam = Array.isArray(id) ? id[0] : id;
-  const alunoId = Number.parseInt(idParam, 10);
-  if (Number.isNaN(alunoId)) {
+  const safeId = Number.parseInt(idParam, 10);
+  if (Number.isNaN(safeId)) {
     return null;
   }
-  return alunoId;
+  return safeId;
 }
 
