@@ -4,6 +4,7 @@ import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import { COLORS } from "../styles/theme";
 import { consultarCep } from "../services/cepService";
+import { consultarEstados, consultarCidades } from "../services/ibgeService";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
@@ -24,8 +25,15 @@ export function Aluno() {
   const [numero, setNumero] = useState("");
   const [bairro, setBairro] = useState("");
   const [cidade, setCidade] = useState("");
+  const [cidadeDoCep, setCidadeDoCep] = useState("");
   const [estado, setEstado] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [listaEstados, setListaEstados] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [listaCidades, setListaCidades] = useState<
+    { label: string; value: string }[]
+  >([]);
 
   const cursoDados = [
     { label: "ADS", value: "ADS" },
@@ -41,8 +49,9 @@ export function Aluno() {
         .then((data) => {
           setEndereco(data.logradouro || "");
           setBairro(data.bairro || "");
-          setCidade(data.localidade || "");
           setEstado(data.uf || "");
+          setCidadeDoCep(data.localidade || "");
+          /* setCidade(data.localidade || ""); */
         })
         .catch((error) => {
           Alert.alert("Erro", error.message);
@@ -84,6 +93,49 @@ export function Aluno() {
       setEstado(alunoData.estado);
     }
   }, [id]);
+
+  useEffect(() => {
+    consultarEstados()
+      .then((data) => {
+        const formatado = data.map((e: any) => ({
+          label: e.nome,
+          value: e.sigla,
+        }));
+        setListaEstados(formatado);
+      })
+      .catch((err) => console.error("Erro ao carregar estados", err));
+  }, []);
+
+  useEffect(() => {
+    if (estado) {
+      consultarCidades(estado)
+        .then((data) => {
+          const formatado = data.map((c: any) => ({
+            label: c.nome,
+            value: c.nome,
+          }));
+          setListaCidades(formatado);
+          if (cidadeDoCep) {
+            const encontrou = formatado.find(
+              (c) => c.value.toLowerCase().trim() === cidadeDoCep.toLowerCase().trim(),
+            );
+            if (encontrou) {
+              setCidade(encontrou.value);
+              setCidadeDoCep("");
+            }
+          }
+        })
+        .catch(() =>
+          Alert.alert(
+            "Erro",
+            "Não foi possível carregar as cidades deste estado.",
+          ),
+        );
+    } else {
+      setListaCidades([]);
+      setCidade("");
+    }
+  }, [estado]);
 
   function handleSalvar() {
     if (!nome || !matricula || !curso || !email) {
@@ -190,17 +242,24 @@ export function Aluno() {
         onChangeText={setBairro}
         placeholder="Digite o bairro"
       />
-      <Input
-        label="Cidade"
-        value={cidade}
-        onChangeText={setCidade}
-        placeholder="Digite a cidade"
-      />
-      <Input
+      <Select
         label="Estado"
+        data={listaEstados}
         value={estado}
-        onChangeText={setEstado}
-        placeholder="Digite o estado"
+        onChange={(val) => {
+          setEstado(val);
+          setCidade("");
+        }}
+        placeholder="Selecione o estado"
+      />
+
+      <Select
+        label="Cidade"
+        data={listaCidades}
+        value={cidade}
+        onChange={setCidade}
+        placeholder="Selecione a cidade"
+        disable={!estado}
       />
       <Button title="Salvar" onPress={handleSalvar} />
     </ScrollView>

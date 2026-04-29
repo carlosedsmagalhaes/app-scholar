@@ -9,6 +9,7 @@ interface SelectProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  disable?: boolean;
   errorMessage?: string;
 }
 
@@ -18,6 +19,7 @@ export function Select({
   value,
   onChange,
   placeholder = "Selecione uma opção",
+  disable = false,
   errorMessage,
 }: SelectProps) {
   const [isFocus, setIsFocus] = useState(false);
@@ -31,6 +33,7 @@ export function Select({
           isFocus && { borderColor: COLORS.primary },
           errorMessage ? { borderColor: COLORS.error } : null,
         ]}
+        value={value}
         placeholderStyle={styles.placeholderStyle}
         selectedTextStyle={styles.selectedTextStyle}
         data={data}
@@ -38,6 +41,7 @@ export function Select({
         labelField="label"
         valueField="value"
         placeholder={!isFocus ? placeholder : ""}
+        disable={disable}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
         onChange={(item) => {

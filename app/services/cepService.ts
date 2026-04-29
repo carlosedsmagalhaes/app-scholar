@@ -1,4 +1,4 @@
-import api from './api';
+import api from './viaCepApi';
 
 export async function consultarCep(cep: string) {
     const sanitizedCep = cep.replace(/\D/g, '');

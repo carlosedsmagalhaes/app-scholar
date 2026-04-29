@@ -4,10 +4,12 @@ import AlunoController from '../controllers/AlunoController';
 import ProfessorController from '../controllers/ProfessorController';
 import DisciplinaController from '../controllers/DisciplinaController';
 import NotasController from '../controllers/NotasController'; 
+import { authMiddleware } from '../middlewares/auth';
 
 const router = Router();
 
 router.post('/api/login', AuthController.login);
+router.use(authMiddleware);
 router.post('/api/alunos', AlunoController.create);
 router.get('/api/alunos', AlunoController.getAll);
 router.get('/api/alunos/:id', AlunoController.getById);
