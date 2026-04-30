@@ -16,7 +16,6 @@ class AuthController {
       }
 
       const isPasswordValid = await bcrypt.compare(senha, user.senha);
-      console.log("Validação da senha:", isPasswordValid);
       if (!isPasswordValid) {
         return res.status(401).json({ message: "Credenciais inválidas" });
       }
@@ -36,6 +35,7 @@ class AuthController {
         },
       });
     } catch (error) {
+      console.error("Erro durante o login:", error);
       return res.status(500).json({ message: `Erro interno do servidor: ${error}` });
     }
   }
