@@ -1,6 +1,11 @@
-import React from 'react';
-import { Routes } from './navigation/index';
+import React from "react";
+import { Routes } from "./navigation/index";
+import { AuthProvider } from "./contexts/AuthContext";
 
 export default function App() {
-  return <Routes />;
+  return (
+    <AuthProvider>
+      <Routes />
+    </AuthProvider>
+  );
 }
