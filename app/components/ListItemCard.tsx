@@ -8,6 +8,7 @@ interface ListItemCardProps {
   description?: string;
   onEdit: () => void;
   onDelete: () => void;
+  showActions?: boolean;
 }
 
 export function ListItemCard({
@@ -15,6 +16,7 @@ export function ListItemCard({
   description,
   onEdit,
   onDelete,
+  showActions = false,
 }: ListItemCardProps) {
   return (
     <View style={styles.container}>
@@ -28,14 +30,21 @@ export function ListItemCard({
           </Text>
         ) : null}
       </View>
-      <View style={styles.actions}>
-        <TouchableOpacity onPress={onEdit} style={styles.button}>
-          <MaterialIcons name="edit" size={22} color={COLORS.primary} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onDelete} style={styles.button}>
-          <MaterialIcons name="delete-outline" size={22} color={COLORS.error} />
-        </TouchableOpacity>
-      </View>
+
+      {showActions && (
+        <View style={styles.actions}>
+          <TouchableOpacity onPress={onEdit} style={styles.button}>
+            <MaterialIcons name="edit" size={22} color={COLORS.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onDelete} style={styles.button}>
+            <MaterialIcons
+              name="delete-outline"
+              size={22}
+              color={COLORS.error}
+            />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }

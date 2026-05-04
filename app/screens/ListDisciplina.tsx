@@ -6,9 +6,13 @@ import { COLORS } from "../styles/theme";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
+import { useAuth } from "../contexts/AuthContext";
 
-export function LisDisciplina() {
+export function ListDisciplina() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const { user } = useAuth();
+  const isAdmin = user?.perfil === 'ADMIN';
+  console.log("Perfil do usuário:", user?.perfil);
   const [disciplinas, setDisciplinas] = useState([
     {
       id: "1",
@@ -62,6 +66,7 @@ export function LisDisciplina() {
           <ListItemCard
             title={item.nome}
             description={`${item.cargaHoraria} | ${item.professor}`}
+            showActions={isAdmin}
             onEdit={() => handleEdit(item.id)}
             onDelete={() => handleDelete(item.id)}
           />

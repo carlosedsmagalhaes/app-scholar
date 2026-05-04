@@ -11,6 +11,9 @@ import { Perfil } from '@prisma/client';
 const router = Router();
 
 router.post('/api/login', AuthController.login);
+router.get('/usuarios/perfil', authMiddleware, (req, res) => {
+  return res.json({ ok: true }); 
+});
 router.use(authMiddleware);
 router.post('/api/alunos', checkRole([Perfil.ADMIN]), AlunoController.create);
 router.get('/api/alunos', checkRole([Perfil.ADMIN]), AlunoController.getAll);

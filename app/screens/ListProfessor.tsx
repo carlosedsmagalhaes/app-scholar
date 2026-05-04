@@ -12,9 +12,12 @@ import { COLORS } from "../styles/theme";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
+import { useAuth } from "../contexts/AuthContext";
 
 export function ListProfessor() {
-    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const { user } = useAuth();
+  const isAdmin = user?.perfil === "ADMIN";
   const [professors, setProfessors] = useState([
     { id: "1", nome: "André Olímpio", titulacao: "Doutor" },
     { id: "2", nome: "Sérgio Santos", titulacao: "Mestre" },
@@ -53,6 +56,7 @@ export function ListProfessor() {
           <ListItemCard
             title={item.nome}
             description={item.titulacao}
+            showActions={isAdmin}
             onEdit={() => handleEdit(item.id)}
             onDelete={() => handleDelete(item.id)}
           />

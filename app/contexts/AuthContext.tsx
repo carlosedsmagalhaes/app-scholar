@@ -31,10 +31,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const storageToken = await AsyncStorage.getItem("@SGE:token");
 
         if (storageUser && storageToken) {
+          await serverApi.get('/usuarios/perfil');
           setUser(JSON.parse(storageUser));
         }
       } catch (err) {
-        console.error("Erro ao carregar dados do AsyncStorage:", err);
+        setUser(null);
+        await AsyncStorage.removeMany(['@SGE:token', '@SGE:user', '@SGE:perfil']);
       } finally {
         setLoading(false);
       }

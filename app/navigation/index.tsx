@@ -1,24 +1,25 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, View, TouchableOpacity } from "react-native";
 import { Login } from "../screens/Login";
 import { Dashboard } from "../screens/Dashboard";
 import { ListAluno } from "../screens/ListAluno";
 import { Aluno } from "../screens/Aluno";
 import { ListProfessor } from "../screens/ListProfessor";
 import { Professor } from "../screens/Professor";
-import { LisDisciplina } from "../screens/LisDisciplina";
+import { ListDisciplina } from "../screens/ListDisciplina";
 import { Disciplina } from "../screens/Disciplina";
 import { Boletim } from "../screens/Boletim";
 import { RootStackParamList } from "./types";
 import { useAuth } from "../contexts/AuthContext";
 import { COLORS } from "../styles/theme";
+import { Ionicons } from "@expo/vector-icons";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function Routes() {
-  const { signed, loading } = useAuth();
+  const { signed, loading, signOut } = useAuth();
 
   if (loading) {
     return (
@@ -41,6 +42,16 @@ export function Routes() {
           headerStyle: { backgroundColor: COLORS.primary },
           headerTintColor: COLORS.white,
           headerTitleStyle: { fontWeight: "bold" },
+          headerRight: () =>
+            signed && (
+              <TouchableOpacity onPress={signOut}>
+                <Ionicons
+                  name="log-out-outline"
+                  size={24}
+                  color={COLORS.white}
+                />
+              </TouchableOpacity>
+            ),
         }}
       >
         {!signed ? (
@@ -67,8 +78,8 @@ export function Routes() {
               options={{ title: "Professores" }}
             />
             <Stack.Screen
-              name="LisDisciplina"
-              component={LisDisciplina}
+              name="ListDisciplina"
+              component={ListDisciplina}
               options={{ title: "Disciplinas" }}
             />
             <Stack.Screen
