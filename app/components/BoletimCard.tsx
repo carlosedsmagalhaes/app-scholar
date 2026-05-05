@@ -1,14 +1,25 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import { COLORS } from "../styles/theme";
 
 interface BoletimCardProps {
-  disciplina: string;
+  titulo: string; // Nome da Disciplina (Aluno) ou Nome do Aluno (Professor)
+  subtitulo?: string; // Nome da Disciplina (Professor) ou Vazio (Aluno)
   nota1: string;
   nota2: string;
+  showActions?: boolean;
+  onEdit?: () => void;
 }
 
-export function BoletimCard({ disciplina, nota1, nota2 }: BoletimCardProps) {
+export function BoletimCard({
+  titulo,
+  subtitulo,
+  nota1,
+  nota2,
+  showActions,
+  onEdit,
+}: BoletimCardProps) {
   const n1 = parseFloat(nota1);
   const n2 = parseFloat(nota2);
   const media = (n1 + n2) / 2;
@@ -21,12 +32,25 @@ export function BoletimCard({ disciplina, nota1, nota2 }: BoletimCardProps) {
   return (
     <View style={[styles.container, { borderLeftColor: statusColor }]}>
       <View style={styles.header}>
-        <Text style={styles.disciplina}>{disciplina}</Text>
-        <View style={[styles.statusBadge, { backgroundColor: statusBg }]}>
-          <Text style={[styles.statusText, { color: statusColor }]}>
-            {statusText}
+        <View style={{ flex: 1 }}>
+          <Text style={styles.titulo} numberOfLines={2}>
+            {titulo}
           </Text>
+          {subtitulo && <Text style={styles.subtitulo}>{subtitulo}</Text>}
         </View>
+        {showActions ? (
+          <View style={styles.actions}>
+            <TouchableOpacity onPress={onEdit} style={styles.actionButton}>
+              <MaterialIcons name="edit" size={22} color={COLORS.primary} />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={[styles.statusBadge, { backgroundColor: statusBg }]}>
+            <Text style={[styles.statusText, { color: statusColor }]}>
+              {statusText}
+            </Text>
+          </View>
+        )}
       </View>
       <View style={styles.content}>
         <View style={styles.notaBlock}>
@@ -66,6 +90,24 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 15,
+  },
+
+  titulo: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: COLORS.text,
+  },
+  subtitulo: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
+  actions: {
+    flexDirection: "row",
+  },
+  actionButton: {
+    padding: 5,
+    marginLeft: 10,
   },
   disciplina: {
     fontSize: 18,

@@ -49,14 +49,13 @@ export function Dashboard() {
             navigation.navigate("ListDisciplina");
           }}
         />
-        {(isAdmin || isProfessor) && (
-          <MenuCard
-            title="Boletim"
-            onPress={() => {
-              navigation.navigate("Boletim");
-            }}
-          />
-        )}
+
+        <MenuCard
+          title="Boletim"
+          onPress={() => {
+            navigation.navigate("ListBoletim");
+          }}
+        />
       </View>
     </ScrollView>
   );

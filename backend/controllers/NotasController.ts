@@ -56,15 +56,39 @@ class NotasController {
     }
   }
 
+  async getAll(req: Request, res: Response) {
+    try {
+      const notas = await prisma.notas.findMany({
+        include: {
+          disciplina: true,
+          aluno: true,
+        },
+      });
+      res.status(200).json(notas);
+    } catch (error) {
+      console.error("Erro ao buscar notas:", error);
+      res.status(500).json({ message: "Erro ao buscar notas" });
+    }
+  }
+
   async getByAluno(req: Request, res: Response) {
     try {
-      const { alunoId } = req.params;
-      const validatedAlunoId = validateId(alunoId);
-      if (validatedAlunoId === null) {
-        return res.status(400).json({ message: "ID de aluno inválido" });
+      const usuarioId:string = String(req.user.id);
+      const validatedUsuarioId = validateId(usuarioId);
+      if (validatedUsuarioId === null) {
+        return res.status(400).json({ message: "ID de usuário inválido" });
       }
+
+      const aluno = await prisma.aluno.findUnique({
+        where: { usuario_id: validatedUsuarioId },
+      });
+
+      if (!aluno) {
+        return res.status(404).json({ message: "Aluno não encontrado" });
+      }
+
       const notas = await prisma.notas.findMany({
-        where: { aluno_id: validatedAlunoId },
+        where: { aluno_id: aluno.id },
         include: {
           disciplina: true,
           aluno: true,

@@ -31,7 +31,8 @@ router.get('/api/disciplinas/:id', checkRole([Perfil.ADMIN]), DisciplinaControll
 router.put('/api/disciplinas/:id', checkRole([Perfil.ADMIN]), DisciplinaController.update);
 router.delete('/api/disciplinas/:id', checkRole([Perfil.ADMIN]), DisciplinaController.delete);
 router.post('/api/notas', checkRole([Perfil.ADMIN, Perfil.PROFESSOR]), NotasController.upsert);
-router.get('/api/notas/aluno/:alunoId', checkRole([Perfil.ADMIN, Perfil.PROFESSOR, Perfil.ALUNO]), NotasController.getByAluno);
+router.get('/api/notas', checkRole([Perfil.ADMIN, Perfil.PROFESSOR]), NotasController.getAll);
+router.get('/api/notas/aluno', checkRole([Perfil.ADMIN, Perfil.PROFESSOR, Perfil.ALUNO]), NotasController.getByAluno);
 router.get('/api/notas/:id', checkRole([Perfil.ADMIN, Perfil.PROFESSOR]), NotasController.getById);
 
 export default router;

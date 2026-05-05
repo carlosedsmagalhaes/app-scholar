@@ -10,7 +10,8 @@ import { ListProfessor } from "../screens/ListProfessor";
 import { Professor } from "../screens/Professor";
 import { ListDisciplina } from "../screens/ListDisciplina";
 import { Disciplina } from "../screens/Disciplina";
-import { Boletim } from "../screens/Boletim";
+import { ListBoletim } from "../screens/ListBoletim";
+import { LancamentoNota } from "../screens/LancamentoNota";
 import { RootStackParamList } from "./types";
 import { useAuth } from "../contexts/AuthContext";
 import { COLORS } from "../styles/theme";
@@ -108,9 +109,18 @@ export function Routes() {
               })}
             />
             <Stack.Screen
-              name="Boletim"
-              component={Boletim}
+              name="ListBoletim"
+              component={ListBoletim}
               options={{ title: "Boletim" }}
+            />
+            <Stack.Screen
+              name="LancamentoNota"
+              component={LancamentoNota}
+              options={({ route }) => ({
+                title: route.params?.nota
+                  ? "Editar Nota"
+                  : "Lançamento de Nota",
+              })}
             />
           </>
         )}
