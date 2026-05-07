@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Alert,
@@ -7,55 +7,78 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { ListItemCard } from "../components/ListItemCard";
+import { InputFilter } from "../components/InputFilter";
+import { EmptyCard } from "../components/EmptyCard";
+import { FloatingButton } from "../components/FloatingButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import { COLORS } from "../styles/theme";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 import { useAuth } from "../contexts/AuthContext";
+import serverApi from "../services/serverApi";
+import { Professor } from "../navigation/types";
 
 export function ListProfessor() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { user } = useAuth();
   const isAdmin = user?.perfil === "ADMIN";
-  const [professors, setProfessors] = useState([
-    { id: "1", nome: "André Olímpio", titulacao: "Doutor" },
-    { id: "2", nome: "Sérgio Santos", titulacao: "Mestre" },
-    { id: "3", nome: "Cláudio Silva", titulacao: "Especialista" },
-  ]);
+  const [professores, setProfessores] = useState<Professor[]>([]);
+  const [searchText, setSearchText] = useState("");
 
-  const handleEdit = (id: string) => {
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfessores();
+    }, []),
+  );
+
+  async function fetchProfessores() {
+    try {
+      const response = await serverApi.get("/api/professores");
+      console.log("Professores carregados:", response.data);
+      setProfessores(response.data);
+    } catch (error) {
+      Alert.alert("Erro", "Falha ao carregar professores.");
+    }
+  }
+
+  const handleEdit = (id: number) => {
     Alert.alert("Editar", `Editar professor`);
     navigation.navigate("Professor", { id });
   };
 
-  const handleDelete = (id: string) => {
-    Alert.alert(
-      "Confirmar Exclusão",
-      `Tem certeza que deseja excluir o professor?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Excluir",
-          style: "destructive",
-          onPress: () => {
-            setProfessors((prev) => prev.filter((prof) => prof.id !== id));
-            Alert.alert("Excluído", "Professor excluído com sucesso");
-          },
+  async function handleDelete(id: number) {
+    Alert.alert("Confirmar Exclusão", "Deseja remover este professor?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: async () => {
+          await serverApi.delete(`/api/professores/${id}`);
+          Alert.alert("Excluido", "Professor removido");
+          fetchProfessores();
         },
-      ],
-    );
-  };
+      },
+    ]);
+  }
+
+  const filtered = professores.filter((p: Professor) =>
+    p.nome.toLowerCase().includes(searchText.toLowerCase()),
+  );
 
   return (
     <View style={styles.container}>
+      <InputFilter
+        placeholder="Buscar professor..."
+        onChangeText={setSearchText}
+      />
       <FlatList
-        data={professors}
-        keyExtractor={(item) => item.id}
+        data={filtered}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <ListItemCard
             title={item.nome}
-            description={item.titulacao}
+            description={item.titulacao.descricao}
             showActions={isAdmin}
             onEdit={() => handleEdit(item.id)}
             onDelete={() => handleDelete(item.id)}
@@ -63,12 +86,9 @@ export function ListProfessor() {
         )}
         contentContainerStyle={styles.listContent}
       />
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation.navigate("Professor")}
-      >
-        <MaterialIcons name="add" size={30} color={COLORS.white} />
-      </TouchableOpacity>
+      {isAdmin && (
+        <FloatingButton onPress={() => navigation.navigate("Professor")} />
+      )}
     </View>
   );
 }
