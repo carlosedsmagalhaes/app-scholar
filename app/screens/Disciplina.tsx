@@ -1,178 +1,194 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView, StyleSheet, Alert } from "react-native";
+import { ScrollView, StyleSheet, Alert, Modal, View, Text, TouchableOpacity } from "react-native";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import { Select } from "../components/Select";
+import { MultiSelectGrid } from "../components/MultiSelectGrid";
 import { COLORS } from "../styles/theme";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 import { useRoute, RouteProp } from "@react-navigation/native";
+import serverApi from "../services/serverApi";
+import type { Disciplina as IDisciplina } from "../types/index";
+
+const SEMESTRE_DADOS = Array.from({ length: 10 }, (_, i) => ({
+  label: `${i + 1}º Semestre`,
+  value: String(i + 1),
+}));
 
 export function Disciplina() {
   const route = useRoute<RouteProp<RootStackParamList, "Disciplina">>();
   const { id } = route.params || {};
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
   const [nome, setNome] = useState("");
   const [cargaHoraria, setCargaHoraria] = useState("");
-  const [professor, setProfessor] = useState("");
-  const [curso, setCurso] = useState("");
+  const [cursoId, setCursoId] = useState("");
   const [semestre, setSemestre] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const cursoDados = [
-    { label: "ADS", value: "ADS" },
-    { label: "DSM", value: "DSM" },
-    { label: "Geoprocessamento", value: "Geoprocessamento" },
-    { label: "Meio Ambiente", value: "Meio Ambiente" },
-  ];
-
-  const professorDados = [
-    { label: "Professor A", value: "Professor A" },
-    { label: "Professor B", value: "Professor B" },
-    { label: "Professor C", value: "Professor C" },
-  ];
-
-  const semestreDados = [
-    { label: "1º Semestre", value: "1º Semestre" },
-    { label: "2º Semestre", value: "2º Semestre" },
-    { label: "3º Semestre", value: "3º Semestre" },
-    { label: "4º Semestre", value: "4º Semestre" },
-    { label: "5º Semestre", value: "5º Semestre" },
-    { label: "6º Semestre", value: "6º Semestre" },
-    { label: "7º Semestre", value: "7º Semestre" },
-    { label: "8º Semestre", value: "8º Semestre" },
-    { label: "9º Semestre", value: "9º Semestre" },
-    { label: "10º Semestre", value: "10º Semestre" },
-  ];
+  // Estados para a seleção multipla de Professores
+  const [professorOpcoes, setProfessorOpcoes] = useState<{ label: string; value: string }[]>([]);
+  const [professoresSelecionados, setProfessoresSelecionados] = useState<{ label: string; value: string }[]>([]);
+  
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [cursos, setCursos] = useState<{ label: string; value: string }[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      const disciplinaData = {
-        nome: "Programacao Mobile",
-        cargaHoraria: "80",
-        professor: "Professor A",
-        curso: "ADS",
-        semestre: "4º Semestre",
-      };
+    async function loadInitialData() {
+      try {
+        setLoading(true);
+        const [resProf, resCursos] = await Promise.all([
+          serverApi.get("/api/professores"),
+          serverApi.get("/api/cursos"),
+        ]);
 
-      setNome(disciplinaData.nome);
-      setCargaHoraria(disciplinaData.cargaHoraria);
-      setProfessor(disciplinaData.professor);
-      setCurso(disciplinaData.curso);
-      setSemestre(disciplinaData.semestre);
+        setProfessorOpcoes(resProf.data.map((p: any) => ({ label: p.nome, value: String(p.id) })));
+        setCursos(resCursos.data.map((c: any) => ({ label: c.nome, value: String(c.id) })));
+
+        if (id) {
+          const resDisc = await serverApi.get<IDisciplina>(`/api/disciplinas/${id}`);
+          const d = resDisc.data;
+          setNome(d.nome);
+          setCargaHoraria(String(d.carga_horaria));
+          setCursoId(String(d.cursos[0].curso?.id || ""));
+          setSemestre(String(d.semestre));
+          
+          // Mapeia os professores que já vêm do banco para o formato do grid
+          const profsMapped = d.professores.map((pd: any) => ({
+            label: pd.professor.nome,
+            value: String(pd.professor.id)
+          }));
+          setProfessoresSelecionados(profsMapped);
+        }
+      } catch (error) {
+        Alert.alert("Erro", "Falha ao carregar dados.");
+      } finally {
+        setLoading(false);
+      }
     }
+    loadInitialData();
   }, [id]);
 
-  function handleSalvar() {
-    if (!nome || !cargaHoraria || !professor || !curso || !semestre) {
-      Alert.alert("Erro", "Por favor, preencha todos os campos obrigatórios.");
-      setError("Por favor, preencha todos os campos obrigatórios.");
+  const handleAddProfessor = (profId: string) => {
+    const jaExiste = professoresSelecionados.find(p => p.value === profId);
+    if (!jaExiste) {
+      const prof = professorOpcoes.find(p => p.value === profId);
+      if (prof) setProfessoresSelecionados([...professoresSelecionados, prof]);
+    }
+    setIsModalVisible(false);
+  };
+
+  const handleRemoveProfessor = (profId: string) => {
+    setProfessoresSelecionados(prev => prev.filter(p => p.value !== profId));
+  };
+
+  async function handleSalvar() {
+    if (!nome || !cargaHoraria || !cursoId || !semestre || professoresSelecionados.length === 0) {
+      Alert.alert("Atenção", "Preencha todos os campos e adicione ao menos um professor.");
+      setError("Preencha todos os campos e adicione ao menos um professor.");
       return;
     }
 
-    console.log("Disciplina cadastrada:", {
+    const payload = {
       nome,
-      cargaHoraria,
-      professor,
-      curso,
-      semestre,
-    });
+      cargaHoraria: Number(cargaHoraria),
+      cursoId: Number(cursoId),
+      semestre: Number(semestre),
+      professorIds: professoresSelecionados.map(p => Number(p.value)) 
+    };
 
-    Alert.alert("Sucesso", "Disciplina cadastrada com sucesso!");
-    setNome("");
-    setCargaHoraria("");
-    setProfessor("");
-    setCurso("");
-    setSemestre("");
-    setError(null);
-    navigation.goBack();
+    try {
+      setLoading(true);
+      if (id) {
+        await serverApi.put(`/api/disciplinas/${id}`, payload);
+      } else {
+        await serverApi.post("/api/disciplinas", payload);
+      }
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível salvar a disciplina.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Input
-        label="Nome da Disciplina"
-        value={nome}
-        onChangeText={setNome}
-        placeholder="Digite o nome da disciplina"
-        errorMessage={error && nome === "" ? error : null}
-      />
-      <Input
-        label="Carga Horária"
-        value={cargaHoraria}
-        onChangeText={setCargaHoraria}
-        placeholder="Digite a carga horária"
-        keyboardType="numeric"
-        errorMessage={error && cargaHoraria === "" ? error : null}
-      />
-      <Select
-        label="Professor"
-        data={professorDados}
-        value={professor}
-        onChange={setProfessor}
-        placeholder="Selecione o professor"
-        errorMessage={error && professor === "" ? error : undefined}
+      <Input label="Nome da Disciplina" value={nome} onChangeText={setNome} placeholder="Ex: Programação Mobile" errorMessage={error && nome === "" ? error : null} />
+      
+      <Input label="Carga Horária (h)" value={cargaHoraria} onChangeText={setCargaHoraria} keyboardType="numeric" placeholder="Ex: 80" errorMessage={error && cargaHoraria === "" ? error : undefined} />
+
+      <Select label="Curso" data={cursos} value={cursoId} onChange={setCursoId} placeholder="Selecione o curso" errorMessage={error && cursoId === "" ? error : undefined} />
+
+      <Select label="Semestre" data={SEMESTRE_DADOS} value={semestre} onChange={setSemestre} placeholder="Selecione o semestre"  errorMessage={error && semestre === "" ? error : undefined} />
+
+      <MultiSelectGrid 
+        label="Professores"
+        selectedItems={professoresSelecionados}
+        onRemove={handleRemoveProfessor}
+        onAddPress={() => setIsModalVisible(true)}
       />
 
-      <Select
-        label="Curso"
-        data={cursoDados}
-        value={curso}
-        onChange={setCurso}
-        placeholder="Selecione o curso"
-        errorMessage={error && curso === "" ? error : undefined}
-      />
+      <Button title={"Salvar"} onPress={handleSalvar} disabled={loading} />
 
-      <Select
-        label="Semestre"
-        data={semestreDados}
-        value={semestre}
-        onChange={setSemestre}
-        placeholder="Selecione o semestre"
-        errorMessage={error && semestre === "" ? error : undefined}
-      />
-      <Button title="Salvar" onPress={handleSalvar} />
+      <Modal visible={isModalVisible} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Selecionar Professor</Text>
+            
+            <Select 
+              label=""
+              data={professorOpcoes}
+              value=""
+              onChange={handleAddProfessor}
+              placeholder="Clique para selecionar"
+            />
+
+            <TouchableOpacity 
+              onPress={() => setIsModalVisible(false)} 
+              style={styles.closeModal}
+            >
+              <Text style={styles.closeModalText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  container: { flex: 1, backgroundColor: COLORS.background },
+  content: { padding: 20, paddingBottom: 40 },
+  modalOverlay: {
     flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  content: {
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
     padding: 20,
-    paddingBottom: 40,
   },
-  dropdown: {
-    height: 55,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 8,
+  modalContent: {
     backgroundColor: COLORS.white,
-    marginBottom: 5,
+    borderRadius: 15,
+    padding: 20,
+    elevation: 5,
   },
-  errorText: {
-    color: COLORS.error,
-    fontSize: 12,
-    marginBottom: 10,
-    marginLeft: 2,
-  },
-  labelPersonalizada: {
-    fontSize: 16,
+  modalTitle: {
+    fontSize: 18,
     fontWeight: "bold",
     color: COLORS.text,
-    marginBottom: 5,
+    marginBottom: 20,
+    textAlign: "center",
   },
-  placeholderStyle: {
-    fontSize: 16,
-    color: "#999",
+  closeModal: {
+    marginTop: 10,
+    alignItems: "center",
+    padding: 10,
   },
-  selectedTextStyle: {
-    fontSize: 16,
-    color: COLORS.text,
+  closeModalText: {
+    color: COLORS.error,
+    fontWeight: "600",
   },
 });

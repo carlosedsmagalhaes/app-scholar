@@ -17,7 +17,7 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 import { useAuth } from "../contexts/AuthContext";
-import { Aluno } from "../navigation/types";
+import { Aluno } from "../types/index";
 
 export function ListAluno() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();

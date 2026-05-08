@@ -17,7 +17,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 import { useAuth } from "../contexts/AuthContext";
 import serverApi from "../services/serverApi";
-import { Professor } from "../navigation/types";
+import { Professor } from "../types/index";
 
 export function ListProfessor() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();

@@ -8,7 +8,8 @@ import serverApi from "../services/serverApi";
 import { useAuth } from "../contexts/AuthContext";
 import { EmptyCard } from "../components/EmptyCard";
 import { InputFilter } from "../components/InputFilter";
-import { RootStackParamList, DadosBoletim, Disciplina, Aluno } from "../navigation/types";
+import { RootStackParamList } from "../navigation/types";
+import { DadosBoletim, Disciplina, Aluno } from "../types/index";
 import { FloatingButton } from "../components/FloatingButton";
 
 export function ListBoletim() {

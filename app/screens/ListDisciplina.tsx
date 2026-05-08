@@ -11,7 +11,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 import { useAuth } from "../contexts/AuthContext";
 import serverApi from "../services/serverApi";
-import { Disciplina } from "../navigation/types";
+import { Disciplina } from "../types/index";
 
 export function ListDisciplina() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
