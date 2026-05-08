@@ -1,5 +1,5 @@
 import React, { useState, useEffect, use } from "react";
-import { ScrollView, StyleSheet, View, Alert } from "react-native";
+import { ScrollView, StyleSheet, View, Alert, ActivityIndicator } from "react-native";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import { COLORS } from "../styles/theme";
@@ -7,62 +7,94 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 import { useRoute, RouteProp } from "@react-navigation/native";
+import type { Professor as IProfessor, Area as IArea, Titutulacao as ITitutulacao } from "../types";
+import { Select } from "../components/Select";
+import serverApi from "../services/serverApi";
 
 export function Professor() {
   const route = useRoute<RouteProp<RootStackParamList, 'Professor'>>();
   const { id } = route.params || {};
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
   const [nome, setNome] = useState("");
-  const [titulacao, setTitulacao] = useState("");
-  const [areaAtuacao, setAreaAtuacao] = useState("");
-  const [tempoDocencia, setTempoDocencia] = useState("");
   const [email, setEmail] = useState("");
+  const [titulacaoId, setTitulacaoId] = useState("");
+  const [areaId, setAreaId] = useState("");
+  
+  const [listaTitulacoes, setListaTitulacoes] = useState<{ label: string; value: string }[]>([]);
+  const [listaAreas, setListaAreas] = useState<{ label: string; value: string }[]>([]);
+  
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (id) {
-      const professorData = {
-        nome: "André Olímpio",
-        titulacao: "Doutor",
-        areaAtuacao: "Computação",
-        tempoDocencia: "10 anos",
-        email: "andre.olimpio@university.edu",
-      };
-      setNome(professorData.nome);
-      setTitulacao(professorData.titulacao);
-      setAreaAtuacao(professorData.areaAtuacao);
-      setTempoDocencia(professorData.tempoDocencia);
-      setEmail(professorData.email);
+    async function loadData() {
+      try {
+        setLoading(true);
+
+        const [resAreas, resTitulacoes] = await Promise.all([
+          serverApi.get("/api/areas"),
+          serverApi.get("/api/titulacoes")
+        ]);
+
+        setListaAreas(resAreas.data.map((a: IArea) => ({ label: a.descricao, value: String(a.id) })));
+        setListaTitulacoes(resTitulacoes.data.map((t: ITitutulacao) => ({ label: t.descricao, value: String(t.id) })));
+
+        if (id) {
+          const resProf = await serverApi.get(`/api/professores/${id}`);
+          const p = resProf.data;
+
+          setNome(p.nome);
+          setEmail(p.usuario.email || "");
+          setTitulacaoId(String(p.titulacao_id));
+          setAreaId(String(p.area_id));
+        }
+      } catch (err) {
+        Alert.alert("Erro", "Não foi possível carregar as informações do professor.");
+      } finally {
+        setLoading(false);
+      }
     }
+    loadData();
   }, [id]);
 
-  function handleSalvar() {
-    if (!nome || !titulacao || !areaAtuacao || !email) {
+  async function handleSalvar() {
+    if (!nome || !email || !titulacaoId || !areaId) {
+      setError("Campos obrigatórios faltando.");
       Alert.alert("Erro", "Por favor, preencha todos os campos obrigatórios.");
-      setError("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
-    console.log("Professor cadastrado:", {
+    const payload = {
       nome,
-      titulacao,
-      areaAtuacao,
-      tempoDocencia,
       email,
-    });
+      titulacao_id: Number(titulacaoId),
+      area_id: Number(areaId),
+    };
 
-    Alert.alert("Sucesso", "Professor cadastrado com sucesso!");
-    setNome("");
-    setTitulacao("");
-    setAreaAtuacao("");
-    setTempoDocencia("");
-    setEmail("");
-    setError(null);
-    navigation.goBack();
+    try {
+      setLoading(true);
+      if (id) {
+        await serverApi.put(`/api/professores/${id}`, payload);
+        Alert.alert("Sucesso", "Professor atualizado com sucesso!");
+      } else {
+        await serverApi.post("/api/professores", payload);
+        Alert.alert("Sucesso", "Professor cadastrado com sucesso!");
+      }
+      navigation.goBack();
+    } catch (err) {
+      Alert.alert("Erro", "Falha ao salvar os dados do professor.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading && id) {
+    return <ActivityIndicator size="large" color={COLORS.primary} style={styles.loader} />;
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+ <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Input
         label="Nome Completo"
         value={nome}
@@ -70,48 +102,46 @@ export function Professor() {
         placeholder="Digite o nome completo"
         errorMessage={error && nome === "" ? error : null}
       />
+
       <Input
         label="Email"
         value={email}
         onChangeText={setEmail}
-        placeholder="Digite o email"
+        placeholder="Ex: professor@fatec.sp.gov.br"
         keyboardType="email-address"
+        autoCapitalize="none"
         errorMessage={error && email === "" ? error : null}
       />
-      <Input
+
+      <Select
         label="Titulação"
-        value={titulacao}
-        onChangeText={setTitulacao}
-        placeholder="Digite a titulação"
-        errorMessage={error && titulacao === "" ? error : null}
-      />
-      <Input
-        label="Área de Atuação"
-        value={areaAtuacao}
-        onChangeText={setAreaAtuacao}
-        placeholder="Digite a área de atuação"
-        errorMessage={error && areaAtuacao === "" ? error : null}
-      />
-      <Input
-        label="Tempo de Docência"
-        value={tempoDocencia}
-        onChangeText={setTempoDocencia}
-        placeholder="Digite o tempo de docência"
-        keyboardType="numeric"
+        data={listaTitulacoes}
+        value={titulacaoId}
+        onChange={setTitulacaoId}
+        placeholder="Selecione a titulação"
+        errorMessage={error && titulacaoId === "" ? error : undefined}
       />
 
-      <Button title="Salvar" onPress={handleSalvar} />
+      <Select
+        label="Área de Atuação"
+        data={listaAreas}
+        value={areaId}
+        onChange={setAreaId}
+        placeholder="Selecione a área"
+        errorMessage={error && areaId === "" ? error : undefined}
+      />
+
+      <Button 
+        title={"Salvar"} 
+        onPress={handleSalvar} 
+        disabled={loading} 
+      />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  content: {
-    padding: 20,
-    paddingBottom: 40,
-  },
+  container: { flex: 1, backgroundColor: COLORS.background },
+  content: { padding: 20, paddingBottom: 40 },
+  loader: { flex: 1, justifyContent: "center", alignItems: "center" }
 });

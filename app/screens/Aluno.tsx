@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView, StyleSheet, View, Alert, Text } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Alert,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import { COLORS } from "../styles/theme";
@@ -10,14 +17,17 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 import { Select } from "../components/Select";
 import { useRoute, RouteProp } from "@react-navigation/native";
+import type { Aluno as IAluno, Curso as ICurso } from "../types";
+import serverApi from "../services/serverApi";
 
 export function Aluno() {
   const route = useRoute<RouteProp<RootStackParamList, "Aluno">>();
   const { id } = route.params || {};
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
   const [nome, setNome] = useState("");
   const [matricula, setMatricula] = useState("");
-  const [curso, setCurso] = useState("");
+  const [cursoId, setCursoId] = useState("");
   const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
   const [cep, setCep] = useState("");
@@ -25,9 +35,15 @@ export function Aluno() {
   const [numero, setNumero] = useState("");
   const [bairro, setBairro] = useState("");
   const [cidade, setCidade] = useState("");
-  const [cidadeDoCep, setCidadeDoCep] = useState("");
   const [estado, setEstado] = useState("");
+
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [cidadeDoCep, setCidadeDoCep] = useState("");
+  const [listaCursos, setListaCursos] = useState<
+    { label: string; value: string }[]
+  >([]);
   const [listaEstados, setListaEstados] = useState<
     { label: string; value: string }[]
   >([]);
@@ -35,18 +51,57 @@ export function Aluno() {
     { label: string; value: string }[]
   >([]);
 
-  const cursoDados = [
-    { label: "ADS", value: "ADS" },
-    { label: "DSM", value: "DSM" },
-    { label: "Geoprocessamento", value: "Geoprocessamento" },
-    { label: "Meio Ambiente", value: "Meio Ambiente" },
-  ];
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true);
+
+        const [resCursos, dataEstados] = await Promise.all([
+          serverApi.get("/api/cursos"),
+          consultarEstados(),
+        ]);
+
+        setListaCursos(
+          resCursos.data.map((c: ICurso) => ({
+            label: c.nome,
+            value: String(c.id),
+          })),
+        );
+        setListaEstados(
+          dataEstados.map((e: any) => ({ label: e.nome, value: e.sigla })),
+        );
+
+        if (id) {
+          const resAluno = await serverApi.get(`/api/alunos/${id}`);
+          const a = resAluno.data;
+          console.log("Aluno carregado:", a);
+          setNome(a.nome);
+          setMatricula(a.matricula);
+          setCursoId(String(a.curso_id));
+          setEmail(a.usuario.email || "");
+          setTelefone(a.telefone || "");
+          setCep(a.cep || "");
+          setEndereco(a.logradouro || "");
+          setNumero(a.numero || "");
+          setBairro(a.bairro || "");
+          setEstado(a.estado || "");
+          setCidadeDoCep(a.cidade || "");
+        }
+      } catch (err) {
+        Alert.alert("Erro", "Falha ao carregar informações iniciais.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, [id]);
 
   useEffect(() => {
     const sanitizedCep = cep.replace(/[^0-9]/g, "");
     if (sanitizedCep.length === 8) {
       consultarCep(sanitizedCep)
         .then((data) => {
+          console.log("Dados do CEP:", data);
           setEndereco(data.logradouro || "");
           setBairro(data.bairro || "");
           setEstado(data.uf || "");
@@ -63,36 +118,6 @@ export function Aluno() {
       setEstado("");
     }
   }, [cep]);
-
-  useEffect(() => {
-    if (id) {
-      const alunoData = {
-        nome: "Carlos Pereira",
-        matricula: "20241001",
-        curso: "ADS",
-        email: "carlos.pereira@aluno.edu",
-        telefone: "(11) 99999-1234",
-        cep: "01001000",
-        endereco: "Praca da Se",
-        numero: "100",
-        bairro: "Se",
-        cidade: "Sao Paulo",
-        estado: "SP",
-      };
-
-      setNome(alunoData.nome);
-      setMatricula(alunoData.matricula);
-      setCurso(alunoData.curso);
-      setEmail(alunoData.email);
-      setTelefone(alunoData.telefone);
-      setCep(alunoData.cep);
-      setEndereco(alunoData.endereco);
-      setNumero(alunoData.numero);
-      setBairro(alunoData.bairro);
-      setCidade(alunoData.cidade);
-      setEstado(alunoData.estado);
-    }
-  }, [id]);
 
   useEffect(() => {
     consultarEstados()
@@ -117,7 +142,9 @@ export function Aluno() {
           setListaCidades(formatado);
           if (cidadeDoCep) {
             const encontrou = formatado.find(
-              (c) => c.value.toLowerCase().trim() === cidadeDoCep.toLowerCase().trim(),
+              (c) =>
+                c.value.toLowerCase().trim() ===
+                cidadeDoCep.toLowerCase().trim(),
             );
             if (encontrou) {
               setCidade(encontrou.value);
@@ -137,41 +164,52 @@ export function Aluno() {
     }
   }, [estado]);
 
-  function handleSalvar() {
-    if (!nome || !matricula || !curso || !email) {
-      Alert.alert("Erro", "Por favor, preencha todos os campos obrigatórios.");
+  async function handleSalvar() {
+    if (!nome || !matricula || !cursoId || !email) {
       setError("Por favor, preencha todos os campos obrigatórios.");
+      Alert.alert("Erro", "Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
-    console.log("Aluno cadastrado:", {
+    const payload = {
       nome,
       matricula,
-      curso,
+      curso_id: Number(cursoId),
       email,
       telefone,
       cep,
-      endereco,
+      logradouro: endereco,
       numero,
       bairro,
       cidade,
       estado,
-    });
+    };
 
-    Alert.alert("Sucesso", "Aluno cadastrado com sucesso!");
-    setNome("");
-    setMatricula("");
-    setCurso("");
-    setEmail("");
-    setTelefone("");
-    setCep("");
-    setEndereco("");
-    setNumero("");
-    setBairro("");
-    setCidade("");
-    setEstado("");
-    setError(null);
-    navigation.goBack();
+    try {
+      setLoading(true);
+      if (id) {
+        await serverApi.put(`/api/alunos/${id}`, payload);
+        Alert.alert("Sucesso", "Aluno atualizado!");
+      } else {
+        await serverApi.post("/api/alunos", payload);
+        Alert.alert("Sucesso", "Aluno cadastrado!");
+      }
+      navigation.goBack();
+    } catch (err) {
+      Alert.alert("Erro", "Não foi possível salvar os dados do aluno.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading && id) {
+    return (
+      <ActivityIndicator
+        size="large"
+        color={COLORS.primary}
+        style={styles.loader}
+      />
+    );
   }
 
   return (
@@ -194,11 +232,11 @@ export function Aluno() {
 
       <Select
         label="Curso"
-        data={cursoDados}
-        value={curso}
-        onChange={setCurso}
+        data={listaCursos}
+        value={cursoId}
+        onChange={setCursoId}
         placeholder="Selecione o curso"
-        errorMessage={error && curso === "" ? error : undefined}
+        errorMessage={error && cursoId === "" ? error : undefined}
       />
 
       <Input
@@ -303,5 +341,10 @@ const styles = StyleSheet.create({
   selectedTextStyle: {
     fontSize: 16,
     color: COLORS.text,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

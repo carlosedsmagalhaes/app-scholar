@@ -5,6 +5,8 @@ import ProfessorController from "../controllers/ProfessorController";
 import DisciplinaController from "../controllers/DisciplinaController";
 import NotasController from "../controllers/NotasController";
 import CursoController from "../controllers/CursoController";
+import AreaController from "../controllers/AreaController";
+import TitulacaoController from "../controllers/TitulacaoController";
 import { authMiddleware } from "../middlewares/auth";
 import { checkRole } from "../middlewares/checkRole";
 import { Perfil } from "@prisma/client";
@@ -122,6 +124,30 @@ router.get(
   "/api/cursos/:id",
   checkRole([Perfil.ADMIN, Perfil.PROFESSOR, Perfil.ALUNO]),
   CursoController.getById,
+);
+
+//ÁREAS
+router.get(
+  "/api/areas",
+  checkRole([Perfil.ADMIN, Perfil.PROFESSOR, Perfil.ALUNO]),
+  AreaController.getAll,
+);
+router.get(
+  "/api/areas/:id",
+  checkRole([Perfil.ADMIN, Perfil.PROFESSOR, Perfil.ALUNO]),
+  AreaController.getById,
+);
+
+//TITULAÇÕES
+router.get(
+  "/api/titulacoes",
+  checkRole([Perfil.ADMIN, Perfil.PROFESSOR, Perfil.ALUNO]),
+  TitulacaoController.getAll,
+);
+router.get(
+  "/api/titulacoes/:id",
+  checkRole([Perfil.ADMIN, Perfil.PROFESSOR, Perfil.ALUNO]),
+  TitulacaoController.getById,
 );
 
 export default router;
