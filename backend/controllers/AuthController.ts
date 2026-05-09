@@ -2,15 +2,13 @@ import { Request, Response } from "express";
 import prisma from "../database/db";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import EmailService from "../services/EmailService";
 
 class AuthController {
   async login(req: Request, res: Response) {
     try {
       const { email, senha } = req.body;
-      console.log("Tentativa de login com email:", email);
-      console.log("Corpo da requisição:", req.body);
       const user = await prisma.usuario.findUnique({ where: { email } });
-      console.log("Usuário encontrado:", user);
       if (!user) {
         return res.status(401).json({ message: "Usuário não encontrado" });
       }
@@ -36,7 +34,64 @@ class AuthController {
       });
     } catch (error) {
       console.error("Erro durante o login:", error);
-      return res.status(500).json({ message: `Erro interno do servidor: ${error}` });
+      return res
+        .status(500)
+        .json({ message: `Erro interno do servidor: ${error}` });
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response) {
+    const { email } = req.body;
+    try {
+      const user = await prisma.usuario.findUnique({ where: { email } });
+      if (!user) {
+        return res.json({
+          message: "Se o e-mail existir, instruções serão enviadas.",
+        });
+      }
+
+      const resetToken = jwt.sign(
+        { userId: user.id, type: "password-reset" },
+        process.env.JWT_SECRET!,
+        { expiresIn: "15m" },
+      );
+
+      await EmailService.sendPasswordResetEmail(user.email, resetToken);
+
+      return res.json({
+        message: "E-mail de recuperação enviado com sucesso.",
+      });
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ message: "Erro ao processar recuperação de senha." });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response) {
+    const { token, novaSenha } = req.body;
+    try {
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+      if (decoded.type !== "password-reset") {
+        return res
+          .status(400)
+          .json({ message: "Token inválido para recuperação de senha." });
+      }
+
+      const hashedPassword = await bcrypt.hash(novaSenha, 10);
+
+      await prisma.usuario.update({
+        where: { id: decoded.userId },
+        data: { senha: hashedPassword },
+      });
+
+      return res.json({ message: "Senha atualizada com sucesso." });
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(400)
+        .json({ message: "Token de recuperação inválido ou expirado." });
     }
   }
 }

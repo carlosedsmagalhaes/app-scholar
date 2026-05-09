@@ -77,7 +77,7 @@ export function Aluno() {
           console.log("Aluno carregado:", a);
           setNome(a.nome);
           setMatricula(a.matricula);
-          setCursoId(String(a.curso_id));
+          setCursoId(String(a.cursoId));
           setEmail(a.usuario.email || "");
           setTelefone(a.telefone || "");
           setCep(a.cep || "");
@@ -174,7 +174,7 @@ export function Aluno() {
     const payload = {
       nome,
       matricula,
-      curso_id: Number(cursoId),
+      cursoId: Number(cursoId),
       email,
       telefone,
       cep,
@@ -299,7 +299,7 @@ export function Aluno() {
         placeholder="Selecione a cidade"
         disable={!estado}
       />
-      <Button title="Salvar" onPress={handleSalvar} />
+      <Button title={"Salvar"} onPress={handleSalvar} />
     </ScrollView>
   );
 }

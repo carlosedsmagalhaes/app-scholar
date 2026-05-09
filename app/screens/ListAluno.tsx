@@ -84,7 +84,7 @@ export function ListAluno() {
       />
 
       {filteredAlunos.length === 0 && !loading ? (
-        <EmptyCard message="Nenhum aluno encontrado." />
+        <EmptyCard message="Nenhum registro encontrado" />
       ) : (
         <FlatList
           data={filteredAlunos}

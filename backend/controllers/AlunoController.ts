@@ -3,13 +3,13 @@ import prisma from "../database/db";
 import { Perfil } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { validateId } from "../utils/validateId";
+import EmailService from "../services/EmailService";
 
 class AlunoController {
   async create(req: Request, res: Response) {
     try {
       const {
         email,
-        senha,
         nome,
         matricula,
         cursoId,
@@ -22,6 +22,10 @@ class AlunoController {
         cidade,
         estado,
       } = req.body;
+
+      const senhaPadrao = "usuario123";
+
+      console.log("Dados recebidos para criação de aluno:", req.body);
 
       const usuarioExistente = await prisma.usuario.findUnique({
         where: { email },
@@ -36,7 +40,7 @@ class AlunoController {
           .json({ message: "Email ou matrícula já cadastrados" });
       }
 
-      const senhaHash = await bcrypt.hash(senha, 10);
+      const senhaHash = await bcrypt.hash(senhaPadrao, 10);
 
       const novoAluno = await prisma.$transaction(async (prisma) => {
         const usuario = await prisma.usuario.create({
@@ -65,6 +69,8 @@ class AlunoController {
 
         return aluno;
       });
+
+      await EmailService.sendWelcomeEmail(email, nome);
 
       return res.status(201).json(novoAluno);
     } catch (error) {

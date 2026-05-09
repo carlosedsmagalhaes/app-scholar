@@ -119,7 +119,7 @@ export function Disciplina() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Input label="Nome da Disciplina" value={nome} onChangeText={setNome} placeholder="Ex: Programação Mobile" errorMessage={error && nome === "" ? error : null} />
       
-      <Input label="Carga Horária (h)" value={cargaHoraria} onChangeText={setCargaHoraria} keyboardType="numeric" placeholder="Ex: 80" errorMessage={error && cargaHoraria === "" ? error : undefined} />
+      <Input label="Carga Horária (horas)" value={cargaHoraria} onChangeText={setCargaHoraria} keyboardType="numeric" placeholder="Ex: 80" errorMessage={error && cargaHoraria === "" ? error : undefined} />
 
       <Select label="Curso" data={cursos} value={cursoId} onChange={setCursoId} placeholder="Selecione o curso" errorMessage={error && cursoId === "" ? error : undefined} />
 

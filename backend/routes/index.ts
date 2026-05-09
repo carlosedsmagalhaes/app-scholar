@@ -13,10 +13,14 @@ import { Perfil } from "@prisma/client";
 
 const router = Router();
 
+//AUTENTICAÇÃO
 router.post("/api/login", AuthController.login);
 router.get("/usuarios/perfil", authMiddleware, (req, res) => {
   return res.json({ ok: true });
 });
+router.post("/api/forgot-password", AuthController.forgotPassword);
+router.post("/api/reset-password", AuthController.resetPassword);
+
 router.use(authMiddleware);
 
 //ALUNOS

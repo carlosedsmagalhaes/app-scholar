@@ -20,6 +20,7 @@ export function Professor() {
   const [email, setEmail] = useState("");
   const [titulacaoId, setTitulacaoId] = useState("");
   const [areaId, setAreaId] = useState("");
+  const [tempoDocencia, setTempoDocencia] = useState("");
   
   const [listaTitulacoes, setListaTitulacoes] = useState<{ label: string; value: string }[]>([]);
   const [listaAreas, setListaAreas] = useState<{ label: string; value: string }[]>([]);
@@ -48,6 +49,7 @@ export function Professor() {
           setEmail(p.usuario.email || "");
           setTitulacaoId(String(p.titulacao_id));
           setAreaId(String(p.area_id));
+          setTempoDocencia(String(p.tempo_docencia));
         }
       } catch (err) {
         Alert.alert("Erro", "Não foi possível carregar as informações do professor.");
@@ -68,8 +70,8 @@ export function Professor() {
     const payload = {
       nome,
       email,
-      titulacao_id: Number(titulacaoId),
-      area_id: Number(areaId),
+      titulacaoId: Number(titulacaoId),
+      areaId: Number(areaId),
     };
 
     try {
@@ -129,6 +131,15 @@ export function Professor() {
         onChange={setAreaId}
         placeholder="Selecione a área"
         errorMessage={error && areaId === "" ? error : undefined}
+      />
+
+      <Input
+        label="Tempo de Docência (anos)"
+        value={tempoDocencia}
+        onChangeText={setTempoDocencia}
+        placeholder="Ex: 10"
+        keyboardType="numeric"
+        errorMessage={error && tempoDocencia === "" ? error : undefined}
       />
 
       <Button 

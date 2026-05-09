@@ -72,6 +72,9 @@ export function ListProfessor() {
         placeholder="Buscar professor..."
         onChangeText={setSearchText}
       />
+      {filtered.length === 0 ? (
+        <EmptyCard message="Nenhum registro encontrado" />
+      ) : (
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id.toString()}
@@ -86,6 +89,7 @@ export function ListProfessor() {
         )}
         contentContainerStyle={styles.listContent}
       />
+      )}
       {isAdmin && (
         <FloatingButton onPress={() => navigation.navigate("Professor")} />
       )}

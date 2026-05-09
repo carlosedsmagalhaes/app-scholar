@@ -116,7 +116,7 @@ export function LancamentoNota() {
       />
 
       <Button
-        title={loading ? "Enviando..." : "Salvar Nota"}
+        title={"Salvar"}
         onPress={handleSave}
         disabled={loading}
       />

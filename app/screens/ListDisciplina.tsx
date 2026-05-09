@@ -70,6 +70,9 @@ export function ListDisciplina() {
         placeholder="Buscar disciplina..."
         onChangeText={setSearchText}
       />
+      {filtered.length === 0 ? (
+        <EmptyCard message="Nenhum registro encontrado" />
+      ) : (
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id.toString()}
@@ -84,6 +87,7 @@ export function ListDisciplina() {
         )}
         contentContainerStyle={styles.listContent}
       />
+      )}
       {isAdmin && <FloatingButton onPress={() => navigation.navigate("Disciplina")} />}
     </View>
   );
