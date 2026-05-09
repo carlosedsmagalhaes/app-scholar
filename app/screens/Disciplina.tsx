@@ -132,7 +132,7 @@ export function Disciplina() {
         onAddPress={() => setIsModalVisible(true)}
       />
 
-      <Button title={"Salvar"} onPress={handleSalvar} disabled={loading} />
+      <Button title={"Confirmar"} onPress={handleSalvar} disabled={loading} />
 
       <Modal visible={isModalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>

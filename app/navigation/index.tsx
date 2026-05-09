@@ -12,6 +12,8 @@ import { ListDisciplina } from "../screens/ListDisciplina";
 import { Disciplina } from "../screens/Disciplina";
 import { ListBoletim } from "../screens/ListBoletim";
 import { LancamentoNota } from "../screens/LancamentoNota";
+import { ForgotPassword } from "../screens/ForgotPassword";
+import { ResetPassword } from "../screens/ResetPassword";
 import { RootStackParamList } from "./types";
 import { useAuth } from "../contexts/AuthContext";
 import { COLORS } from "../styles/theme";
@@ -56,11 +58,25 @@ export function Routes() {
         }}
       >
         {!signed ? (
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{ headerShown: false }}
-          />
+          <>
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+              name="ForgotPassword"
+              component={ForgotPassword}
+              options={{ title: "Recuperar Senha" }}
+            />
+
+            <Stack.Screen
+              name="ResetPassword"
+              component={ResetPassword}
+              options={{ title: "Redefinir Senha" }}
+            />
+          </>
         ) : (
           <>
             <Stack.Screen

@@ -10,5 +10,7 @@ export type RootStackParamList = {
   Professor: { id?: number } | undefined;
   Disciplina: { id?: number } | undefined;
   ListBoletim: undefined;
-  LancamentoNota: { nota?: DadosBoletim } | undefined; 
+  LancamentoNota: { nota?: DadosBoletim } | undefined;
+  ForgotPassword: undefined;
+  ResetPassword: undefined; 
 };

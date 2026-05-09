@@ -11,6 +11,7 @@ export interface Aluno {
   matricula: string;
   curso_id: number;
   usuario_id: number;
+  usuario: Usuario;
   telefone: string;
   cep: string;
   logradouro: string;
@@ -54,9 +55,11 @@ export interface Professor {
   nome: string;
   titulacao_id: number;
   usuario_id: number;
+  usuario: Usuario;
   area_id: number;
   area: Area;
   titulacao: Titutulacao;
+  tempo_docencia: number;
   disciplinas: Disciplina[];
 }
 
@@ -70,4 +73,11 @@ export interface Curso_Disciplina {
   id: number;
   curso: Curso;
   disciplina_id: number;
+}
+
+export interface Usuario {
+  id: number;
+  email: string;
+  senha: string;
+  perfil: "ALUNO" | "PROFESSOR" | "ADMIN";
 }

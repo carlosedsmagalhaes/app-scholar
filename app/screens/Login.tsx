@@ -1,14 +1,26 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, Alert, ActivityIndicator } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Alert,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { COLORS } from "../styles/theme";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import { useAuth } from "../contexts/AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../navigation/types";
 
 export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const { signIn } = useAuth();
 
@@ -65,6 +77,13 @@ export function Login() {
       ) : (
         <Button title="Entrar" onPress={handleLogin} />
       )}
+      <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
+        <Text
+          style={{ color: COLORS.primary, textAlign: "center", marginTop: 15 }}
+        >
+          Esqueceu a senha?
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }

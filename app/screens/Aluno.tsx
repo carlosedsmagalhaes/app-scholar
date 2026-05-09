@@ -72,12 +72,12 @@ export function Aluno() {
         );
 
         if (id) {
-          const resAluno = await serverApi.get(`/api/alunos/${id}`);
+          const resAluno = await serverApi.get<IAluno>(`/api/alunos/${id}`);
           const a = resAluno.data;
           console.log("Aluno carregado:", a);
           setNome(a.nome);
           setMatricula(a.matricula);
-          setCursoId(String(a.cursoId));
+          setCursoId(String(a.curso_id));
           setEmail(a.usuario.email || "");
           setTelefone(a.telefone || "");
           setCep(a.cep || "");
@@ -299,7 +299,7 @@ export function Aluno() {
         placeholder="Selecione a cidade"
         disable={!estado}
       />
-      <Button title={"Salvar"} onPress={handleSalvar} />
+      <Button title={"Confirmar"} onPress={handleSalvar} />
     </ScrollView>
   );
 }

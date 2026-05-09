@@ -42,7 +42,7 @@ export function Professor() {
         setListaTitulacoes(resTitulacoes.data.map((t: ITitutulacao) => ({ label: t.descricao, value: String(t.id) })));
 
         if (id) {
-          const resProf = await serverApi.get(`/api/professores/${id}`);
+          const resProf = await serverApi.get<IProfessor>(`/api/professores/${id}`);
           const p = resProf.data;
 
           setNome(p.nome);
@@ -143,7 +143,7 @@ export function Professor() {
       />
 
       <Button 
-        title={"Salvar"} 
+        title={"Confirmar"} 
         onPress={handleSalvar} 
         disabled={loading} 
       />
