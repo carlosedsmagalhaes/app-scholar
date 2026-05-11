@@ -33,11 +33,19 @@ export function ListBoletim() {
     useCallback(() => {
       async function fetchDados() {
         try {
-          let url = user?.perfil === "ALUNO" ? "/api/notas/aluno" : "/api/notas";
+          let url = "/api/notas"; // Default para ADMIN
+          
+          if (user?.perfil === "ALUNO") {
+            url = "/api/notas/aluno";
+          } else if (user?.perfil === "PROFESSOR") {
+            url = "/api/notas/professor"; 
+          }
           const response = await serverApi.get(url);
           setDados(response.data);
         } catch (error) {
           Alert.alert("Erro", "Falha ao atualizar boletim.");
+        } finally {
+          setLoading(false);
         }
       }
 
@@ -51,7 +59,9 @@ export function ListBoletim() {
         placeholder="Buscar por aluno ou disciplina..."
         onChangeText={setSearchText}
       />
-      {dadosFiltrados.length === 0 ? (
+      {loading ? (
+        <EmptyCard message="Carregando..." />
+      ) : dadosFiltrados.length === 0 ? (
         <EmptyCard message="Nenhum registro encontrado" />
       ) : (
         <FlatList

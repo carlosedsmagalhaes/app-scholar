@@ -27,15 +27,25 @@ function normalizeIdList(value: unknown): number[] {
 class DisciplinaController {
   async create(req: Request, res: Response) {
     try {
-      const { nome, cargaHoraria, semestre, professorIds, cursoIds, professorId, cursoId } =
-        req.body;
+      const {
+        nome,
+        cargaHoraria,
+        semestre,
+        professorIds,
+        cursoIds,
+        professorId,
+        cursoId,
+      } = req.body;
 
       const normalizedProfessorIds = normalizeIdList(
         professorIds ?? professorId,
       );
       const normalizedCursoIds = normalizeIdList(cursoIds ?? cursoId);
 
-      if (normalizedProfessorIds.length === 0 || normalizedCursoIds.length === 0) {
+      if (
+        normalizedProfessorIds.length === 0 ||
+        normalizedCursoIds.length === 0
+      ) {
         return res.status(400).json({
           message: "Informe ao menos um professor e um curso válidos.",
         });
@@ -85,7 +95,7 @@ class DisciplinaController {
 
       res.status(201).json(novaDisciplina);
     } catch (error) {
-        console.error("Erro ao criar disciplina:", error);
+      console.error("Erro ao criar disciplina:", error);
       res.status(500).json({ error: "Erro ao criar disciplina" });
     }
   }
@@ -103,6 +113,20 @@ class DisciplinaController {
             some: {
               professor: { usuario_id: id },
             },
+          },
+        };
+      }
+
+      if (perfil === Perfil.ALUNO) {
+        const alunoData = await prisma.aluno.findUnique({
+          where: { usuario_id: id },
+          select: { curso_id: true },
+        });
+
+        whereCondition = {
+          status: "ATIVO",
+          cursos: {
+            some: { curso_id: alunoData?.curso_id },
           },
         };
       }
@@ -177,14 +201,24 @@ class DisciplinaController {
           .json({ message: "ID da disciplina é obrigatório" });
       }
 
-      const { nome, cargaHoraria, semestre, professorIds, cursoIds, professorId, cursoId } =
-        req.body;
+      const {
+        nome,
+        cargaHoraria,
+        semestre,
+        professorIds,
+        cursoIds,
+        professorId,
+        cursoId,
+      } = req.body;
       const normalizedProfessorIds = normalizeIdList(
         professorIds ?? professorId,
       );
       const normalizedCursoIds = normalizeIdList(cursoIds ?? cursoId);
 
-      if (normalizedProfessorIds.length === 0 || normalizedCursoIds.length === 0) {
+      if (
+        normalizedProfessorIds.length === 0 ||
+        normalizedCursoIds.length === 0
+      ) {
         return res.status(400).json({
           message: "Informe ao menos um professor e um curso válidos.",
         });
