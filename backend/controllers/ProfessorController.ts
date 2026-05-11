@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../database/db";
-import { Perfil } from "@prisma/client";
+import { Perfil, STATUS } from "@prisma/client";
 import bycript from "bcryptjs";
 import { validateId } from "../utils/validateId";
 import EmailService from "../services/EmailService";
@@ -57,6 +57,7 @@ class ProfessorController {
   async getAll(req: Request, res: Response) {
     try {
       const professores = await prisma.professor.findMany({
+        where: { status: STATUS.ATIVO },
         include: {
           usuario: {
             select: {
@@ -82,7 +83,7 @@ class ProfessorController {
         return res.status(400).json({ message: "ID de professor inválido" });
       }
       const professor = await prisma.professor.findUnique({
-        where: { id: professorId },
+        where: { id: professorId, status: STATUS.ATIVO },
         include: {
           usuario: {
             select: {
@@ -169,11 +170,13 @@ class ProfessorController {
         return res.status(404).json({ message: "Professor não encontrado" });
       }
       await prisma.$transaction(async (prisma) => {
-        await prisma.professor.delete({
+        await prisma.professor.update({
           where: { id: professorId },
+          data: { status: STATUS.INATIVO },
         });
-        await prisma.usuario.delete({
+        await prisma.usuario.update({
           where: { id: professorExistente.usuario_id },
+          data: { status: STATUS.INATIVO },
         });
       });
       res.json({ message: "Professor deletado com sucesso" });

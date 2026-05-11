@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
 import prisma from "../database/db";
+import { STATUS } from "@prisma/client";
 import { validateId } from "../utils/validateId";
 
 class CursoController {
   async getAll(req: Request, res: Response) {
     try {
-      const cursos = await prisma.curso.findMany();
+      const cursos = await prisma.curso.findMany({
+        where: { status: STATUS.ATIVO },
+      });
       res.status(200).json(cursos);
     } catch (error) {
       console.error("Erro ao buscar cursos:", error);
@@ -21,7 +24,7 @@ class CursoController {
         return res.status(400).json({ message: "ID de curso inválido" });
       }
       const curso = await prisma.curso.findUnique({
-        where: { id: cursoId },
+        where: { id: cursoId, status: STATUS.ATIVO },
       });
       if (!curso) {
         return res.status(404).json({ message: "Curso não encontrado" });

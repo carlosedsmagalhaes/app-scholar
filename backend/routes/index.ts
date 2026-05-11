@@ -113,6 +113,11 @@ router.get(
   NotasController.getByAluno,
 );
 router.get(
+  "/api/notas/professor",
+  checkRole([Perfil.ADMIN, Perfil.PROFESSOR]),
+  NotasController.getByProfessor,
+);
+router.get(
   "/api/notas/:id",
   checkRole([Perfil.ADMIN, Perfil.PROFESSOR]),
   NotasController.getById,

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../database/db";
-import { Perfil } from "@prisma/client";
+import { Perfil, STATUS } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { validateId } from "../utils/validateId";
 import EmailService from "../services/EmailService";
@@ -82,6 +82,7 @@ class AlunoController {
   async getAll(req: Request, res: Response) {
     try {
       const alunos = await prisma.aluno.findMany({
+        where: { status: STATUS.ATIVO },
         include: { usuario: { select: { email: true } }, curso: true },
       });
       return res.status(200).json(alunos);
@@ -101,7 +102,7 @@ class AlunoController {
       }
 
       const aluno = await prisma.aluno.findUnique({
-        where: { id: alunoId },
+        where: { id: alunoId, status: STATUS.ATIVO },
         include: { usuario: { select: { email: true } }, curso: true },
       });
 
@@ -193,11 +194,13 @@ class AlunoController {
         return res.status(404).json({ message: "Aluno não encontrado" });
       }
       await prisma.$transaction(async (prisma) => {
-        await prisma.aluno.delete({
+        await prisma.aluno.update({
           where: { id: alunoId },
+          data: { status: STATUS.INATIVO },
         });
-        await prisma.usuario.delete({
+        await prisma.usuario.update({
           where: { id: alunoExistente.usuario_id },
+          data: { status: STATUS.INATIVO },
         });
       });
       return res.status(200).json({ message: "Aluno deletado com sucesso" });

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../database/db";
+import { Perfil, STATUS } from "@prisma/client";
 import { validateId } from "../utils/validateId";
 
 function normalizeIdList(value: unknown): number[] {
@@ -91,7 +92,25 @@ class DisciplinaController {
 
   async getAll(req: Request, res: Response) {
     try {
+      const { id, perfil } = req.user;
+
+      let whereCondition: object = { status: STATUS.ATIVO };
+
+      if (perfil === Perfil.PROFESSOR) {
+        whereCondition = {
+          ...whereCondition,
+          professores: {
+            some: {
+              professor: { usuario_id: id },
+            },
+          },
+        };
+      }
+
+      console.log("Condição de busca de disciplinas:", whereCondition);
+
       const disciplinas = await prisma.disciplina.findMany({
+        where: whereCondition,
         include: {
           professores: {
             include: {
@@ -123,7 +142,7 @@ class DisciplinaController {
       }
 
       const disciplina = await prisma.disciplina.findUnique({
-        where: { id: disciplinaId },
+        where: { id: disciplinaId, status: STATUS.ATIVO },
         include: {
           professores: {
             include: {
@@ -244,8 +263,9 @@ class DisciplinaController {
         await tx.curso_Disciplina.deleteMany({
           where: { disciplina_id: disciplinaId },
         });
-        await tx.disciplina.delete({
+        await tx.disciplina.update({
           where: { id: disciplinaId },
+          data: { status: STATUS.INATIVO },
         });
       });
       res.status(200).json({ message: "Disciplina deletada com sucesso" });

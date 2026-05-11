@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../database/db";
+import { STATUS } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import EmailService from "../services/EmailService";
@@ -8,7 +9,7 @@ class AuthController {
   async login(req: Request, res: Response) {
     try {
       const { email, senha } = req.body;
-      const user = await prisma.usuario.findUnique({ where: { email } });
+      const user = await prisma.usuario.findUnique({ where: { email, status: STATUS.ATIVO } });
       if (!user) {
         return res.status(401).json({ message: "Usuário não encontrado" });
       }
@@ -43,7 +44,7 @@ class AuthController {
   async forgotPassword(req: Request, res: Response) {
     const { email } = req.body;
     try {
-      const user = await prisma.usuario.findUnique({ where: { email } });
+      const user = await prisma.usuario.findUnique({ where: { email, status: STATUS.ATIVO } });
       if (!user) {
         return res.json({
           message: "Se o e-mail existir, instruções serão enviadas.",

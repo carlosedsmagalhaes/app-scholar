@@ -12,6 +12,11 @@ enum Perfil {
   ADMIN
 }
 
+enum STATUS {
+  ATIVO
+  INATIVO
+}
+
 model Usuario {
   id        Int @id @default(autoincrement())
   email     String @unique
@@ -19,6 +24,7 @@ model Usuario {
   perfil    Perfil
   aluno     Aluno?
   professor Professor?
+  status    STATUS @default(ATIVO) 
 }
 
 model Aluno {
@@ -38,6 +44,7 @@ model Aluno {
   estado      String?
   complemento String?
   notas       Notas[]
+  status      STATUS @default(ATIVO) 
 }
 
 model Professor {
@@ -51,6 +58,7 @@ model Professor {
   usuario        Usuario      @relation(fields: [usuario_id], references: [id])
   tempo_docencia Int?
   disciplinas    Professor_Disciplina[]
+  status         STATUS @default(ATIVO)
 }
 
 model Disciplina {
@@ -61,6 +69,7 @@ model Disciplina {
   notas         Notas[]
   professores   Professor_Disciplina[]
   cursos        Curso_Disciplina[]
+  status        STATUS @default(ATIVO)
 }
 
 model Notas {
@@ -82,18 +91,21 @@ model Curso {
   qtd_semestre Int?
   alunos       Aluno[]
   disciplinas  Curso_Disciplina[]
+  status      STATUS @default(ATIVO) 
 }
 
 model Titulacao {
   id        Int         @id @default(autoincrement())
   descricao String
   professores Professor[]
+  status      STATUS @default(ATIVO) 
 }
 
 model Area {
   id        Int         @id @default(autoincrement())
   descricao String
   professores Professor[]
+  status      STATUS @default(ATIVO) 
 }
 
 model Professor_Disciplina {

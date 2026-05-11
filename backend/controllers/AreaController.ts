@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
 import prisma from "../database/db";
+import { STATUS } from "@prisma/client";
 import { validateId } from "../utils/validateId";
 
 class AreaController {
   async getAll(req: Request, res: Response) {
     try {
-      const areas = await prisma.area.findMany();
+      const areas = await prisma.area.findMany({
+        where: { status: STATUS.ATIVO },
+      });
       res.status(200).json(areas);
     } catch (error) {
       console.error("Erro ao buscar áreas:", error);
@@ -21,7 +24,7 @@ class AreaController {
         return res.status(400).json({ message: "ID de área inválido" });
       }
       const area = await prisma.area.findUnique({
-        where: { id: areaId },
+        where: { id: areaId, status: STATUS.ATIVO },
       });
       if (!area) {
         return res.status(404).json({ message: "Área não encontrada" });
