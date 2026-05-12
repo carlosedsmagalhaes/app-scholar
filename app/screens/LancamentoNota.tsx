@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { View, StyleSheet, ScrollView, Alert, Text } from "react-native";
+import Loader from "../components/Loader";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { COLORS } from "../styles/theme";
 import { Select } from "../components/Select";
@@ -12,10 +13,8 @@ export function LancamentoNota() {
   const navigation = useNavigation();
   const params = route.params as any;
 
-  const [alunos, setAlunos] = useState<{ label: string; value: string }[]>([]);
-  const [disciplinas, setDisciplinas] = useState<
-    { label: string; value: string }[]
-  >([]);
+  const [listaAlunosOriginal, setListaAlunosOriginal] = useState<any[]>([]);
+  const [listaDisciplinasOriginal, setListaDisciplinasOriginal] = useState<any[]>([]);
 
   const [alunoId, setAlunoId] = useState("");
   const [disciplinaId, setDisciplinaId] = useState("");
@@ -26,24 +25,13 @@ export function LancamentoNota() {
   useEffect(() => {
     async function loadResources() {
       try {
+        setLoading(true);
         const [resAlunos, resDisc] = await Promise.all([
           serverApi.get("/api/alunos"),
           serverApi.get("/api/disciplinas"),
         ]);
-
-        setAlunos(
-          resAlunos.data.map((a: any) => ({
-            label: a.nome,
-            value: String(a.id),
-          })),
-        );
-        setDisciplinas(
-          resDisc.data.map((d: any) => ({
-            label: d.nome,
-            value: String(d.id),
-          })),
-        );
-
+        setListaAlunosOriginal(resAlunos.data);
+        setListaDisciplinasOriginal(resDisc.data);
         if (params?.nota) {
           setAlunoId(String(params.nota.aluno_id));
           setDisciplinaId(String(params.nota.disciplina_id));
@@ -53,9 +41,38 @@ export function LancamentoNota() {
       } catch (error) {
         Alert.alert("Erro", "Falha ao carregar dados para lançamento.");
       }
+      finally {
+        setLoading(false);
+      }
     }
     loadResources();
   }, [params]);
+
+  const alunosFiltrados = useMemo(() => {
+    if (!disciplinaId) return [];
+
+    // Encontra a disciplina selecionada para saber o semestre dela
+    const discSelecionada = listaDisciplinasOriginal.find(
+      (d) => String(d.id) === disciplinaId
+    );
+    if (!discSelecionada) return [];
+
+    // Filtra alunos que estão no mesmo semestre da disciplina
+    return listaAlunosOriginal
+      .filter((a) => a.semestre === discSelecionada.semestre)
+      .map((a) => ({
+        label: `${a.nome} (${a.matricula})`,
+        value: String(a.id),
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)); // Ordena alfabeticamente
+  }, [disciplinaId, listaAlunosOriginal, listaDisciplinasOriginal]);
+
+  const disciplinasData = useMemo(() => {
+    return listaDisciplinasOriginal.map((d) => ({
+      label: `${d.nome} - ${d.semestre}º Sem`,
+      value: String(d.id),
+    }));
+  }, [listaDisciplinasOriginal]);
 
   async function handleSave() {
     if (!alunoId || !disciplinaId || !nota1 || !nota2) {
@@ -82,21 +99,27 @@ export function LancamentoNota() {
   }
 
   return (
+    loading ? (
+      <Loader />
+    ) : (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Select
-        label="Aluno"
-        data={alunos}
-        value={alunoId}
-        onChange={setAlunoId}
-        disable={!!params?.nota} // Bloqueia troca de aluno na edição
+        label="Disciplina"
+        data={disciplinasData}
+        value={disciplinaId}
+        onChange={(val) => {
+          setDisciplinaId(val);
+          setAlunoId(""); // Reseta o aluno se trocar a disciplina
+        }}
+        disable={!!params?.nota} // Bloqueia troca de disciplina na edição
       />
 
       <Select
-        label="Disciplina"
-        data={disciplinas}
-        value={disciplinaId}
-        onChange={setDisciplinaId}
-        disable={!!params?.nota} // Bloqueia troca de disciplina na edição
+        label="Aluno"
+        data={alunosFiltrados}
+        value={alunoId}
+        onChange={setAlunoId}
+        disable={!!params?.nota || !disciplinaId} // Bloqueia troca de aluno na edição ou se nenhuma disciplina selecionada
       />
 
       <Input
@@ -115,15 +138,11 @@ export function LancamentoNota() {
         keyboardType="numeric"
       />
 
-      <Button
-        title={"Confirmar"}
-        onPress={handleSave}
-        disabled={loading}
-      />
+      <Button title={"Confirmar"} onPress={handleSave} disabled={loading} />
     </ScrollView>
+    )
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -132,5 +151,5 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-  }
+  },
 });

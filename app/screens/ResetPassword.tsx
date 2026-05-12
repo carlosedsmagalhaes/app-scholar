@@ -71,7 +71,7 @@ export function ResetPassword() {
         errorMessage={error && confirmarSenha === "" ? error : null}
       />
 
-      <Button title={"Confirmar"} onPress={handleReset} disabled={loading} />
+      <Button title={"Confirmar"} onPress={handleReset} loading={loading} disabled={loading} />
     </ScrollView>
   );
 }

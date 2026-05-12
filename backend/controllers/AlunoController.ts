@@ -26,7 +26,6 @@ class AlunoController {
 
       const senhaPadrao = "usuario123";
 
-      console.log("Dados recebidos para criação de aluno:", req.body);
 
       const usuarioExistente = await prisma.usuario.findUnique({
         where: { email },
@@ -59,6 +58,7 @@ class AlunoController {
             telefone,
             cep,
             logradouro,
+            complemento,
             numero,
             bairro,
             cidade,
@@ -85,6 +85,7 @@ class AlunoController {
     try {
       const alunos = await prisma.aluno.findMany({
         where: { status: STATUS.ATIVO },
+        orderBy: { nome: "asc" },
         include: { usuario: { select: { email: true } }, curso: true },
       });
       return res.status(200).json(alunos);
@@ -132,6 +133,7 @@ class AlunoController {
         email,
         nome,
         senha,
+        matricula,
         cursoId,
         semestre,
         telefone,
@@ -139,6 +141,7 @@ class AlunoController {
         logradouro,
         numero,
         bairro,
+        complemento,
         cidade,
         estado,
       } = req.body;
@@ -162,15 +165,17 @@ class AlunoController {
           where: { id: alunoId },
           data: {
             nome,
+            matricula,
             telefone,
             cep,
             logradouro,
+            complemento,
             numero,
             bairro,
             cidade,
             estado,
             semestre,
-            curso_id: cursoId,
+            curso_id: cursoId, 
           },
         });
 

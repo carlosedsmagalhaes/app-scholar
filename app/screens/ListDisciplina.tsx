@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { View, Alert, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import Loader from "../components/Loader";
 import { ListItemCard } from "../components/ListItemCard";
 import { InputFilter } from "../components/InputFilter";
 import { EmptyCard } from "../components/EmptyCard";
@@ -17,7 +18,6 @@ export function ListDisciplina() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { user } = useAuth();
   const isAdmin = user?.perfil === 'ADMIN';
-  console.log("Perfil do usuário:", user?.perfil);
   const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,7 +32,6 @@ export function ListDisciplina() {
     try {
       setLoading(true);
       const response = await serverApi.get("/api/disciplinas");
-      console.log("Disciplinas carregadas:", response.data);
       setDisciplinas(response.data);
     } catch (error) {
       Alert.alert("Erro", "Falha ao carregar disciplinas.");
@@ -75,7 +74,7 @@ export function ListDisciplina() {
         onChangeText={setSearchText}
       />
       {loading ? (
-        <EmptyCard message="Carregando..." />
+        <Loader />
       ) :
       dadosFiltrados.length === 0 ? (
         <EmptyCard message="Nenhum registro encontrado" />
@@ -123,5 +122,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { View, StyleSheet, FlatList, Alert } from "react-native";
+import Loader from "../components/Loader";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { BoletimCard } from "../components/BoletimCard";
@@ -60,7 +61,7 @@ export function ListBoletim() {
         onChangeText={setSearchText}
       />
       {loading ? (
-        <EmptyCard message="Carregando..." />
+        <Loader />
       ) : dadosFiltrados.length === 0 ? (
         <EmptyCard message="Nenhum registro encontrado" />
       ) : (
@@ -101,5 +102,10 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 20,
     paddingBottom: 40,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

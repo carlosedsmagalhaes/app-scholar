@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import Loader from "../components/Loader";
 import { ListItemCard } from "../components/ListItemCard";
 import { InputFilter } from "../components/InputFilter";
 import { EmptyCard } from "../components/EmptyCard";
@@ -37,7 +38,6 @@ export function ListAluno() {
     try {
       setLoading(true);
       const response = await serverApi.get("/api/alunos");
-      console.log("Alunos carregados:", response.data);
       setAlunos(response.data);
     } catch (error) {
       Alert.alert("Erro", "Não foi possível carregar os alunos.");
@@ -84,7 +84,7 @@ export function ListAluno() {
       />
 
       {loading ? (
-        <EmptyCard message="Carregando..." />
+        <Loader />
       ) :
       dadosFiltrados.length === 0 ? (
         <EmptyCard message="Nenhum registro encontrado" />
@@ -119,6 +119,11 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 20,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   fab: {
     position: "absolute",

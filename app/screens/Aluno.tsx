@@ -5,8 +5,8 @@ import {
   View,
   Alert,
   Text,
-  ActivityIndicator,
 } from "react-native";
+import Loader from "../components/Loader";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import { COLORS } from "../styles/theme";
@@ -78,7 +78,6 @@ export function Aluno() {
         if (id) {
           const resAluno = await serverApi.get<IAluno>(`/api/alunos/${id}`);
           const a = resAluno.data;
-          console.log("Aluno carregado:", a);
           setNome(a.nome);
           setMatricula(a.matricula);
           setCursoId(String(a.curso_id));
@@ -106,7 +105,6 @@ export function Aluno() {
     if (sanitizedCep.length === 8) {
       consultarCep(sanitizedCep)
         .then((data) => {
-          console.log("Dados do CEP:", data);
           setEndereco(data.logradouro || "");
           setBairro(data.bairro || "");
           setEstado(data.uf || "");
@@ -219,13 +217,7 @@ export function Aluno() {
   }
 
   if (loading && id) {
-    return (
-      <ActivityIndicator
-        size="large"
-        color={COLORS.primary}
-        style={styles.loader}
-      />
-    );
+    return <Loader />;
   }
 
   return (

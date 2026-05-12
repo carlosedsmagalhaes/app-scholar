@@ -10,7 +10,6 @@ class ProfessorController {
     try {
       const { email, nome, titulacaoId, areaId, tempoDocencia } =
         req.body;
-      console.log("Dados recebidos para criação de professor:", req.body);  
       const senhaPadrao = "usuario123";
 
       const usuarioExistente = await prisma.usuario.findUnique({
@@ -58,6 +57,7 @@ class ProfessorController {
     try {
       const professores = await prisma.professor.findMany({
         where: { status: STATUS.ATIVO },
+        orderBy: { nome: "asc" },
         include: {
           usuario: {
             select: {

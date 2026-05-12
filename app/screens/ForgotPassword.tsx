@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Alert, Text, ActivityIndicator } from "react-native";
+import { View, StyleSheet, Alert, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
@@ -57,6 +57,7 @@ export function ForgotPassword() {
       <Button 
         title={"Confirmar"} 
         onPress={handleSendEmail} 
+        loading={loading}
         disabled={loading}
       />
     </View>

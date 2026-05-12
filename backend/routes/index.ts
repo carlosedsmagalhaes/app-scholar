@@ -25,10 +25,10 @@ router.use(authMiddleware);
 
 //ALUNOS
 router.post("/api/alunos", checkRole([Perfil.ADMIN]), AlunoController.create);
-router.get("/api/alunos", checkRole([Perfil.ADMIN]), AlunoController.getAll);
+router.get("/api/alunos", checkRole([Perfil.ADMIN, Perfil.PROFESSOR]), AlunoController.getAll);
 router.get(
   "/api/alunos/:id",
-  checkRole([Perfil.ADMIN]),
+  checkRole([Perfil.ADMIN, Perfil.PROFESSOR]),
   AlunoController.getById,
 );
 router.put(

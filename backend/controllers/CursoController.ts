@@ -8,6 +8,7 @@ class CursoController {
     try {
       const cursos = await prisma.curso.findMany({
         where: { status: STATUS.ATIVO },
+        orderBy: { nome: "asc" },
       });
       res.status(200).json(cursos);
     } catch (error) {

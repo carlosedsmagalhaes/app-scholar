@@ -1,5 +1,6 @@
 import React, { useState, useEffect, use } from "react";
-import { ScrollView, StyleSheet, View, Alert, ActivityIndicator } from "react-native";
+import { ScrollView, StyleSheet, View, Alert } from "react-native";
+import Loader from "../components/Loader";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import { COLORS } from "../styles/theme";
@@ -49,7 +50,7 @@ export function Professor() {
           setEmail(p.usuario.email || "");
           setTitulacaoId(String(p.titulacao_id));
           setAreaId(String(p.area_id));
-          setTempoDocencia(String(p.tempo_docencia));
+          setTempoDocencia(p.tempo_docencia ? String(p.tempo_docencia) : "");
         }
       } catch (err) {
         Alert.alert("Erro", "Não foi possível carregar as informações do professor.");
@@ -92,7 +93,7 @@ export function Professor() {
   }
 
   if (loading && id) {
-    return <ActivityIndicator size="large" color={COLORS.primary} style={styles.loader} />;
+    return <Loader />;
   }
 
   return (

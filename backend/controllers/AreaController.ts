@@ -8,6 +8,7 @@ class AreaController {
     try {
       const areas = await prisma.area.findMany({
         where: { status: STATUS.ATIVO },
+        orderBy: { descricao: "asc" },
       });
       res.status(200).json(areas);
     } catch (error) {

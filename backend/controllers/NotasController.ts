@@ -86,6 +86,7 @@ class NotasController {
   async getAll(req: Request, res: Response) {
     try {
       const notas = await prisma.notas.findMany({
+        orderBy: { disciplina: { nome: "asc" } },
         include: {
           disciplina: true,
           aluno: true,
@@ -118,6 +119,7 @@ class NotasController {
 
       const notas = await prisma.notas.findMany({
         where: { aluno_id: aluno.id },
+        orderBy: { disciplina: { nome: "asc" } },
         include: {
           disciplina: true,
           aluno: true,
@@ -145,10 +147,11 @@ class NotasController {
               some: {
                 professor: { usuario_id: validatedUsuarioId },
               },
-              status: STATUS.ATIVO,
-            },
+            },           
+            status: STATUS.ATIVO,
           },
         },
+        orderBy: { aluno: { nome: "desc" }, disciplina: { nome: "asc" } },
         include: {
           aluno: true,
           disciplina: true,

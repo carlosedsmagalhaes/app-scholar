@@ -8,6 +8,7 @@ class TitulacaoController {
     try {
       const titulacoes = await prisma.titulacao.findMany({
         where: { status: STATUS.ATIVO },
+        orderBy: { descricao: "asc" },
       });
       res.status(200).json(titulacoes);
     } catch (error) {
