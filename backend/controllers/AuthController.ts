@@ -9,7 +9,9 @@ class AuthController {
   async login(req: Request, res: Response) {
     try {
       const { email, senha } = req.body;
-      const user = await prisma.usuario.findUnique({ where: { email, status: STATUS.ATIVO } });
+      const user = await prisma.usuario.findUnique({
+        where: { email, status: STATUS.ATIVO },
+      });
       if (!user) {
         return res.status(401).json({ message: "Usuário não encontrado" });
       }
@@ -22,7 +24,7 @@ class AuthController {
       const token = jwt.sign(
         { userId: user.id, perfil: user.perfil },
         process.env.JWT_SECRET!,
-        { expiresIn: "1h" },
+        { expiresIn: "30d" },
       );
 
       return res.json({
@@ -44,7 +46,9 @@ class AuthController {
   async forgotPassword(req: Request, res: Response) {
     const { email } = req.body;
     try {
-      const user = await prisma.usuario.findUnique({ where: { email, status: STATUS.ATIVO } });
+      const user = await prisma.usuario.findUnique({
+        where: { email, status: STATUS.ATIVO },
+      });
       if (!user) {
         return res.json({
           message: "Se o e-mail existir, instruções serão enviadas.",
@@ -56,6 +60,11 @@ class AuthController {
         process.env.JWT_SECRET!,
         { expiresIn: "15m" },
       );
+
+      await prisma.usuario.update({
+        where: { id: user.id },
+        data: { reset_token: resetToken }, // Salva o novo, invalidando o anterior
+      });
 
       await EmailService.sendPasswordResetEmail(user.email, resetToken);
 
@@ -80,11 +89,22 @@ class AuthController {
           .json({ message: "Token inválido para recuperação de senha." });
       }
 
+      const user = await prisma.usuario.findUnique({
+        where: { id: decoded.userId },
+      });
+
+      // Se o token enviado for diferente do que está no banco, ele foi sobrescrito ou já usado
+      if (!user || user.reset_token !== token) {
+        return res
+          .status(401)
+          .json({ message: "Este link de recuperação não é mais válido." });
+      }
+
       const hashedPassword = await bcrypt.hash(novaSenha, 10);
 
       await prisma.usuario.update({
         where: { id: decoded.userId },
-        data: { senha: hashedPassword },
+        data: { senha: hashedPassword, reset_token: null }, // Limpa o token para garantir que não possa ser reutilizado,
       });
 
       return res.json({ message: "Senha atualizada com sucesso." });

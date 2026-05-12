@@ -25,6 +25,7 @@ model Usuario {
   aluno     Aluno?
   professor Professor?
   status    STATUS @default(ATIVO) 
+  reset_token String?  @unique
 }
 
 model Aluno {
