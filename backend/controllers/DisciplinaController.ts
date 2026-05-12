@@ -133,7 +133,7 @@ class DisciplinaController {
 
       const disciplinas = await prisma.disciplina.findMany({
         where: whereCondition,
-        orderBy: { nome: "asc", },
+        orderBy: [ { semestre: "asc" }, { nome: "asc" }],
         include: {
           professores: {
             include: {

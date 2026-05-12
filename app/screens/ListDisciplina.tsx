@@ -85,7 +85,7 @@ export function ListDisciplina() {
         renderItem={({ item }) => (
           <ListItemCard
             title={item.nome}
-            description={`${item.carga_horaria} | ${item.professores.map((p) => p.professor.nome).join(", ")}`}
+            description={`${item.semestre} | ${item.professores.map((p) => p.professor.nome).join(", ")}`}
             showActions={isAdmin}
             onEdit={() => handleEdit(item.id)}
             onDelete={() => handleDelete(item.id)}
