@@ -20,6 +20,7 @@ export function ListDisciplina() {
   console.log("Perfil do usuário:", user?.perfil);
   const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
   const [searchText, setSearchText] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -29,11 +30,14 @@ export function ListDisciplina() {
 
   async function fetchDisciplinas() {
     try {
+      setLoading(true);
       const response = await serverApi.get("/api/disciplinas");
       console.log("Disciplinas carregadas:", response.data);
       setDisciplinas(response.data);
     } catch (error) {
       Alert.alert("Erro", "Falha ao carregar disciplinas.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,7 +64,7 @@ export function ListDisciplina() {
     );
   };
 
-  const filtered = disciplinas.filter((d: any) => 
+  const dadosFiltrados = disciplinas.filter((d: any) => 
     d.nome.toLowerCase().includes(searchText.toLowerCase())
   );
 
@@ -70,11 +74,14 @@ export function ListDisciplina() {
         placeholder="Buscar disciplina..."
         onChangeText={setSearchText}
       />
-      {filtered.length === 0 ? (
+      {loading ? (
+        <EmptyCard message="Carregando..." />
+      ) :
+      dadosFiltrados.length === 0 ? (
         <EmptyCard message="Nenhum registro encontrado" />
       ) : (
       <FlatList
-        data={filtered}
+        data={dadosFiltrados}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <ListItemCard

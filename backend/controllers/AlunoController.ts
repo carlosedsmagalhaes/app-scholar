@@ -13,6 +13,7 @@ class AlunoController {
         nome,
         matricula,
         cursoId,
+        semestre,
         telefone,
         cep,
         logradouro,
@@ -62,6 +63,7 @@ class AlunoController {
             bairro,
             cidade,
             estado,
+            semestre,
             curso_id: cursoId,
             usuario_id: usuario.id,
           },
@@ -130,6 +132,8 @@ class AlunoController {
         email,
         nome,
         senha,
+        cursoId,
+        semestre,
         telefone,
         cep,
         logradouro,
@@ -165,6 +169,8 @@ class AlunoController {
             bairro,
             cidade,
             estado,
+            semestre,
+            curso_id: cursoId,
           },
         });
 

@@ -11,11 +11,9 @@ import { RootStackParamList } from "../navigation/types";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import serverApi from "../services/serverApi";
 import type { Disciplina as IDisciplina } from "../types/index";
+import { calculateSemestre } from "../utils/calculateSemestre";
 
-const SEMESTRE_DADOS = Array.from({ length: 10 }, (_, i) => ({
-  label: `${i + 1}º Semestre`,
-  value: String(i + 1),
-}));
+const SEMESTRE_DADOS = calculateSemestre(10);
 
 export function Disciplina() {
   const route = useRoute<RouteProp<RootStackParamList, "Disciplina">>();

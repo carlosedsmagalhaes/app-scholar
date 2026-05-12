@@ -45,6 +45,7 @@ model Aluno {
   complemento String?
   notas       Notas[]
   status      STATUS @default(ATIVO) 
+  semestre    Int @default(1)
 }
 
 model Professor {

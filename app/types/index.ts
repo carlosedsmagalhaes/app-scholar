@@ -10,6 +10,7 @@ export interface Aluno {
   nome: string;
   matricula: string;
   curso_id: number;
+  semestre: number;
   usuario_id: number;
   usuario: Usuario;
   telefone: string;

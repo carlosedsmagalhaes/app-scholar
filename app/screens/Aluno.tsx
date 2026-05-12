@@ -19,6 +19,7 @@ import { Select } from "../components/Select";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import type { Aluno as IAluno, Curso as ICurso } from "../types";
 import serverApi from "../services/serverApi";
+import { calculateSemestre } from "../utils/calculateSemestre";
 
 export function Aluno() {
   const route = useRoute<RouteProp<RootStackParamList, "Aluno">>();
@@ -28,6 +29,8 @@ export function Aluno() {
   const [nome, setNome] = useState("");
   const [matricula, setMatricula] = useState("");
   const [cursoId, setCursoId] = useState("");
+  const [cursosOriginais, setCursosOriginais] = useState<ICurso[]>([]);
+  const [semestre, setSemestre] = useState("");
   const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
   const [cep, setCep] = useState("");
@@ -61,6 +64,7 @@ export function Aluno() {
           consultarEstados(),
         ]);
 
+        setCursosOriginais(resCursos.data);
         setListaCursos(
           resCursos.data.map((c: ICurso) => ({
             label: c.nome,
@@ -78,6 +82,7 @@ export function Aluno() {
           setNome(a.nome);
           setMatricula(a.matricula);
           setCursoId(String(a.curso_id));
+          setSemestre(String(a.semestre));
           setEmail(a.usuario.email || "");
           setTelefone(a.telefone || "");
           setCep(a.cep || "");
@@ -164,8 +169,18 @@ export function Aluno() {
     }
   }, [estado]);
 
+  const listaSemestres = React.useMemo(() => {
+    const cursoSelecionado = cursosOriginais.find(
+      (c) => String(c.id) === cursoId,
+    );
+    if (!cursoSelecionado || !cursoSelecionado.qtd_semestre) {
+      return [];
+    }
+    return calculateSemestre(cursoSelecionado.qtd_semestre);
+  }, [cursoId, cursosOriginais]);
+
   async function handleSalvar() {
-    if (!nome || !matricula || !cursoId || !email) {
+    if (!nome || !matricula || !cursoId || !email || !semestre) {
       setError("Por favor, preencha todos os campos obrigatórios.");
       Alert.alert("Erro", "Por favor, preencha todos os campos obrigatórios.");
       return;
@@ -175,6 +190,7 @@ export function Aluno() {
       nome,
       matricula,
       cursoId: Number(cursoId),
+      semestre: Number(semestre),
       email,
       telefone,
       cep,
@@ -234,9 +250,22 @@ export function Aluno() {
         label="Curso"
         data={listaCursos}
         value={cursoId}
-        onChange={setCursoId}
+        onChange={ (val) => {
+          setCursoId(val);
+          setSemestre("");
+        }}
         placeholder="Selecione o curso"
         errorMessage={error && cursoId === "" ? error : undefined}
+      />
+
+      <Select
+        label="Semestre"
+        data={listaSemestres}
+        value={semestre}
+        onChange={setSemestre}
+        placeholder={"Selecione o semestre"}
+        disable={!cursoId}
+        errorMessage={error && semestre === "" ? error : undefined}
       />
 
       <Input

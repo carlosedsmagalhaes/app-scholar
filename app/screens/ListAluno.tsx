@@ -70,7 +70,7 @@ export function ListAluno() {
     ]);
   };
 
-  const filteredAlunos = alunos.filter(
+  const dadosFiltrados = alunos.filter(
     (aluno: Aluno) =>
       aluno.nome.toLowerCase().includes(searchText.toLowerCase()) ||
       aluno.matricula.toLowerCase().includes(searchText.toLowerCase()),
@@ -83,11 +83,14 @@ export function ListAluno() {
         onChangeText={setSearchText}
       />
 
-      {filteredAlunos.length === 0 && !loading ? (
+      {loading ? (
+        <EmptyCard message="Carregando..." />
+      ) :
+      dadosFiltrados.length === 0 ? (
         <EmptyCard message="Nenhum registro encontrado" />
       ) : (
         <FlatList
-          data={filteredAlunos}
+          data={dadosFiltrados}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <ListItemCard

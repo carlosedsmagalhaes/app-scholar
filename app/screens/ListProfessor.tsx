@@ -25,6 +25,7 @@ export function ListProfessor() {
   const isAdmin = user?.perfil === "ADMIN";
   const [professores, setProfessores] = useState<Professor[]>([]);
   const [searchText, setSearchText] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -34,11 +35,14 @@ export function ListProfessor() {
 
   async function fetchProfessores() {
     try {
+      setLoading(true);
       const response = await serverApi.get("/api/professores");
       console.log("Professores carregados:", response.data);
       setProfessores(response.data);
     } catch (error) {
       Alert.alert("Erro", "Falha ao carregar professores.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -62,7 +66,7 @@ export function ListProfessor() {
     ]);
   }
 
-  const filtered = professores.filter((p: Professor) =>
+  const dadosFiltrados = professores.filter((p: Professor) =>
     p.nome.toLowerCase().includes(searchText.toLowerCase()),
   );
 
@@ -72,11 +76,14 @@ export function ListProfessor() {
         placeholder="Buscar professor..."
         onChangeText={setSearchText}
       />
-      {filtered.length === 0 ? (
+      {loading ? (
+        <EmptyCard message="Carregando..." />
+      ) :
+      dadosFiltrados.length === 0 ? (
         <EmptyCard message="Nenhum registro encontrado" />
       ) : (
       <FlatList
-        data={filtered}
+        data={dadosFiltrados}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <ListItemCard
