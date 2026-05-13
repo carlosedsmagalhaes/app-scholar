@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from "react-native";
 
 const serverApi = axios.create({
-  baseURL: "http://192.168.18.6:3333",
+  baseURL: "https://app-scholar.onrender.com",
   timeout: 5000,
 });
 
