@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import serverApi from "../services/serverApi";
 
 interface User {
@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       } catch (err) {
         setUser(null);
-        await AsyncStorage.removeMany(['@SGE:token', '@SGE:user', '@SGE:perfil']);
+        await AsyncStorage.multiRemove(['@SGE:token', '@SGE:user', '@SGE:perfil']);
       } finally {
         setLoading(false);
       }
