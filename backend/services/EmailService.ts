@@ -30,7 +30,7 @@ class EmailService {
       </div>
         `;
 
-        console.log("Enviando email para:", email);
+    console.log("Enviando email para:", email);
     return await this.transporter.sendMail({
       from: `"App Scholar" <no-reply@scholar.com>`,
       to: email,
