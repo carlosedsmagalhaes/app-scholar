@@ -31,6 +31,11 @@ class EmailService {
         `;
 
     console.log("Enviando email para:", email);
+    console.log("Conexão SMTP configurada:", {
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      user: process.env.EMAIL_USER,
+    });
     return await this.transporter.sendMail({
       from: `"App Scholar" <no-reply@scholar.com>`,
       to: email,
