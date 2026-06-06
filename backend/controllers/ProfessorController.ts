@@ -8,8 +8,7 @@ import EmailService from "../services/EmailService";
 class ProfessorController {
   async create(req: Request, res: Response) {
     try {
-      const { email, nome, titulacaoId, areaId, tempoDocencia } =
-        req.body;
+      const { email, nome, titulacaoId, areaId, tempoDocencia } = req.body;
       const senhaPadrao = "usuario123";
 
       console.log("Dados recebidos para criação de professor:", {
@@ -23,12 +22,19 @@ class ProfessorController {
       const usuarioExistente = await prisma.usuario.findUnique({
         where: { email },
       });
-      console.log("Verificando existência de usuário com email:", email, "Resultado:", usuarioExistente);
+      console.log(
+        "Verificando existência de usuário com email:",
+        email,
+        "Resultado:",
+        usuarioExistente,
+      );
 
       if (usuarioExistente) {
         return res.status(400).json({ message: "Email já cadastrado" });
       }
-      console.log("Nenhum usuário encontrado com o email fornecido, prosseguindo com a criação.");
+      console.log(
+        "Nenhum usuário encontrado com o email fornecido, prosseguindo com a criação.",
+      );
       const senhaHash = await bycript.hash(senhaPadrao, 10);
 
       const novoProfessor = await prisma.$transaction(async (prisma) => {
@@ -53,7 +59,11 @@ class ProfessorController {
         return professor;
       });
 
-      await EmailService.sendWelcomeEmail(email, nome);
+      try {
+        await EmailService.sendWelcomeEmail(email, nome);
+      } catch (emailError) {
+        console.error("Falha ao enviar e-mail de boas-vindas:", emailError);
+      }
 
       console.log("Professor criado com sucesso:", novoProfessor);
       res.status(201).json(novoProfessor);
@@ -153,7 +163,7 @@ class ProfessorController {
             nome,
             titulacao_id: titulacaoId,
             area_id: areaId,
-            tempo_docencia:tempoDocencia,
+            tempo_docencia: tempoDocencia,
           },
         });
 
