@@ -41,7 +41,6 @@ export function ListDisciplina() {
   };
 
   const handleEdit = (id: number) => {
-    Alert.alert("Editar", "Editar disciplina");
     navigation.navigate("Disciplina", { id });
   };
 

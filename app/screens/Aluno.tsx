@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  Alert,
-  Text,
-} from "react-native";
+import { ScrollView, StyleSheet, View, Alert, Text } from "react-native";
 import Loader from "../components/Loader";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
@@ -54,6 +48,8 @@ export function Aluno() {
     { label: string; value: string }[]
   >([]);
 
+  const isInitialLoad = React.useRef(true);
+
   useEffect(() => {
     async function loadData() {
       try {
@@ -78,6 +74,8 @@ export function Aluno() {
         if (id) {
           const resAluno = await serverApi.get<IAluno>(`/api/alunos/${id}`);
           const a = resAluno.data;
+          console.log("Bairro do aluno:", a.bairro);
+          console.log("Endereço do aluno:", a.logradouro);
           setNome(a.nome);
           setMatricula(a.matricula);
           setCursoId(String(a.curso_id));
@@ -90,6 +88,12 @@ export function Aluno() {
           setBairro(a.bairro || "");
           setEstado(a.estado || "");
           setCidadeDoCep(a.cidade || "");
+
+          setTimeout(() => {
+            isInitialLoad.current = false;
+          }, 100);
+        } else {
+          isInitialLoad.current = false;
         }
       } catch (err) {
         Alert.alert("Erro", "Falha ao carregar informações iniciais.");
@@ -102,6 +106,11 @@ export function Aluno() {
 
   useEffect(() => {
     const sanitizedCep = cep.replace(/[^0-9]/g, "");
+    // Se for a carga inicial da edição, evita a consulta
+    if (isInitialLoad.current) {
+      return;
+    }
+
     if (sanitizedCep.length === 8) {
       consultarCep(sanitizedCep)
         .then((data) => {
@@ -242,7 +251,7 @@ export function Aluno() {
         label="Curso"
         data={listaCursos}
         value={cursoId}
-        onChange={ (val) => {
+        onChange={(val) => {
           setCursoId(val);
           setSemestre("");
         }}

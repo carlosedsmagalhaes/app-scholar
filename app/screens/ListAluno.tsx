@@ -47,7 +47,6 @@ export function ListAluno() {
   }
 
   const handleEdit = (id: number) => {
-    Alert.alert("Editar", "Editar aluno");
     navigation.navigate("Aluno", { id });
   };
 

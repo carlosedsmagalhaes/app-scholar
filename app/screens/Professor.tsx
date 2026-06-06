@@ -73,6 +73,7 @@ export function Professor() {
       email,
       titulacaoId: Number(titulacaoId),
       areaId: Number(areaId),
+      tempoDocencia: tempoDocencia ? Number(tempoDocencia) : null,
     };
 
     try {
