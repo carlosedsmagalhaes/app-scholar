@@ -12,14 +12,23 @@ class ProfessorController {
         req.body;
       const senhaPadrao = "usuario123";
 
+      console.log("Dados recebidos para criação de professor:", {
+        email,
+        nome,
+        titulacaoId,
+        areaId,
+        tempoDocencia,
+      });
+
       const usuarioExistente = await prisma.usuario.findUnique({
         where: { email },
       });
+      console.log("Verificando existência de usuário com email:", email, "Resultado:", usuarioExistente);
 
       if (usuarioExistente) {
         return res.status(400).json({ message: "Email já cadastrado" });
       }
-
+      console.log("Nenhum usuário encontrado com o email fornecido, prosseguindo com a criação.");
       const senhaHash = await bycript.hash(senhaPadrao, 10);
 
       const novoProfessor = await prisma.$transaction(async (prisma) => {
@@ -46,6 +55,7 @@ class ProfessorController {
 
       await EmailService.sendWelcomeEmail(email, nome);
 
+      console.log("Professor criado com sucesso:", novoProfessor);
       res.status(201).json(novoProfessor);
     } catch (error) {
       console.error("Erro ao criar professor:", error);
