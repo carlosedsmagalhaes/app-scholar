@@ -40,8 +40,12 @@ class EmailService {
       port: process.env.EMAIL_PORT,
       user: process.env.EMAIL_USER,
     });
+
+    await this.transporter.verify();
+    console.log("SMTP OK");
+
     return await this.transporter.sendMail({
-      from: `"App Scholar" <no-reply@scholar.com>`,
+      from: `"App Scholar" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: assunto,
       html,
@@ -63,7 +67,7 @@ class EmailService {
     `;
 
     return await this.transporter.sendMail({
-      from: `"App Scholar" <no-reply@scholar.com>`,
+      from: `"App Scholar" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: assunto,
       html,
