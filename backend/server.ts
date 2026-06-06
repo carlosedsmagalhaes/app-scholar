@@ -1,8 +1,10 @@
 import express from 'express';
 import cors from 'cors';
+import dns from "node:dns";
 import { config } from 'dotenv';
 import routes from './routes';
 
+dns.setDefaultResultOrder("ipv4first");
 config();
 
 const app = express();
