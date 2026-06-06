@@ -26,7 +26,6 @@ class AlunoController {
 
       const senhaPadrao = "usuario123";
 
-
       const usuarioExistente = await prisma.usuario.findUnique({
         where: { email },
       });
@@ -72,7 +71,11 @@ class AlunoController {
         return aluno;
       });
 
-      await EmailService.sendWelcomeEmail(email, nome);
+      try {
+        await EmailService.sendWelcomeEmail(email, nome);
+      } catch (emailError) {
+        console.error("Falha ao enviar e-mail de boas-vindas:", emailError);
+      }
 
       return res.status(201).json(novoAluno);
     } catch (error) {
@@ -175,7 +178,7 @@ class AlunoController {
             cidade,
             estado,
             semestre,
-            curso_id: cursoId, 
+            curso_id: cursoId,
           },
         });
 
