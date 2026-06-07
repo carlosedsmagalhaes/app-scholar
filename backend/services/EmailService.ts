@@ -1,22 +1,32 @@
-import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
 import { config } from "dotenv";
-import dns from "node:dns/promises";
-
 
 config();
 
 class EmailService {
-  private transporter;
-  constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: 465, //Number(process.env.EMAIL_PORT),
-      secure: true,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+  private readonly apiKey = process.env.SENDGRID_API_KEY;
+  private readonly senderEmail = process.env.SENDGRID_SENDER_EMAIL ?? "no-reply@scholar.com";
+  private readonly senderName = process.env.SENDGRID_SENDER_NAME ?? "App Scholar";
+
+  private async sendEmail(to: string, subject: string, html: string, text: string, name?: string) {
+    if (!this.apiKey) {
+      throw new Error("SENDGRID_API_KEY nao configurada.");
+    }
+
+    sgMail.setApiKey(this.apiKey);
+
+    return sgMail.send({
+      to: {
+        email: to,
+        name,
       },
-      connectionTimeout: 30000,
+      from: {
+        email: this.senderEmail,
+        name: this.senderName,
+      },
+      subject,
+      html,
+      text,
     });
   }
 
@@ -32,29 +42,17 @@ class EmailService {
         <p>Atenciosamente,<br />Equipe Acadêmica</p>
       </div>
         `;
+      const text = [
+        `Olá, ${nome}!`,
+        "Sua conta no App Scholar foi criada com sucesso.",
+        "Para o seu primeiro acesso, utilize a senha padrão: usuario123",
+        'Por questões de segurança, recomendamos que você acesse a tela de login e clique em "Esqueci minha senha" para cadastrar uma senha pessoal.',
+        "",
+        "Atenciosamente,",
+        "Equipe Acadêmica",
+      ].join("\n");
 
-    console.log("Enviando email para:", email);
-    console.log("Conexão SMTP configurada:", {
-      host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT,
-      user: process.env.EMAIL_USER,
-    });
-
-    const result = await dns.lookup("smtp.gmail.com", {
-      family: 4,
-    });
-
-    console.log(result);
-
-    await this.transporter.verify();
-    console.log("SMTP OK");
-
-    return await this.transporter.sendMail({
-      from: `"App Scholar" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: assunto,
-      html,
-    });
+      return this.sendEmail(email, assunto, html, text, nome);
   }
 
   async sendPasswordResetEmail(email: string, token: string) {
@@ -70,19 +68,22 @@ class EmailService {
       <p>Este token expira em 15 minutos.</p>
     </div>
     `;
+    const text = [
+      "Recuperação de Senha",
+      "Você solicitou a alteração de sua senha no App Scholar.",
+      "Copie o token abaixo e cole no aplicativo para prosseguir:",
+      token,
+      "",
+      "Este token expira em 15 minutos.",
+    ].join("\n");
 
-    return await this.transporter.sendMail({
-      from: `"App Scholar" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: assunto,
-      html,
-    });
+    return this.sendEmail(email, assunto, html, text);
   }
 }
 
 export default new EmailService();
 
-/* const emailService = new EmailService();
+const emailService = new EmailService();
 const resultado = async () => {
   await emailService.sendWelcomeEmail(
     "carlos123cadu12355@gmail.com",
@@ -90,5 +91,9 @@ const resultado = async () => {
   );
 };
 
-console.log(resultado());
- */
+resultado().then(() => {
+  console.log("Email enviado com sucesso!");
+}).catch((error) => {
+  console.error("Erro ao enviar email:", error);
+});
+
