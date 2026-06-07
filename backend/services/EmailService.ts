@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
 import { config } from "dotenv";
+import dns from "node:dns/promises";
+
 
 config();
 
@@ -40,6 +42,12 @@ class EmailService {
       port: process.env.EMAIL_PORT,
       user: process.env.EMAIL_USER,
     });
+
+    const result = await dns.lookup("smtp.gmail.com", {
+      family: 4,
+    });
+
+    console.log(result);
 
     await this.transporter.verify();
     console.log("SMTP OK");
