@@ -147,11 +147,14 @@ class NotasController {
               some: {
                 professor: { usuario_id: validatedUsuarioId },
               },
-            },           
+            },
             status: STATUS.ATIVO,
           },
         },
-        orderBy: { aluno: { nome: "desc" }, disciplina: { nome: "asc" } },
+        orderBy: [
+          { aluno: { nome: "desc" } },
+          { disciplina: { nome: "asc" } },
+        ],
         include: {
           aluno: true,
           disciplina: true,
