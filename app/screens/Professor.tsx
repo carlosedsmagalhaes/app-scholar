@@ -25,6 +25,8 @@ export function Professor() {
   
   const [listaTitulacoes, setListaTitulacoes] = useState<{ label: string; value: string }[]>([]);
   const [listaAreas, setListaAreas] = useState<{ label: string; value: string }[]>([]);
+  const emailRef = useRef<TextInput>(null);
+  const tempoDocenciaRef = useRef<TextInput>(null);
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,6 +107,7 @@ export function Professor() {
         onChangeText={setNome}
         placeholder="Digite o nome completo"
         errorMessage={error && nome === "" ? error : null}
+          nextRef={emailRef}
       />
 
       <Input
@@ -115,6 +118,8 @@ export function Professor() {
         keyboardType="email-address"
         autoCapitalize="none"
         errorMessage={error && email === "" ? error : null}
+          ref={emailRef}
+          nextRef={tempoDocenciaRef}
       />
 
       <Select
@@ -142,6 +147,9 @@ export function Professor() {
         placeholder="Ex: 10"
         keyboardType="numeric"
         errorMessage={error && tempoDocencia === "" ? error : undefined}
+          ref={tempoDocenciaRef}
+          returnKeyType="done"
+          onSubmitEditing={handleSalvar}
       />
 
       <Button 

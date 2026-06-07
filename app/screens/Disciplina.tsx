@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { ScrollView, StyleSheet, Alert, Modal, View, Text, TouchableOpacity } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { ScrollView, StyleSheet, Alert, Modal, View, Text, TouchableOpacity, TextInput } from "react-native";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import Loader from "../components/Loader";
@@ -33,6 +33,7 @@ export function Disciplina() {
   const [cursosOriginais, setCursosOriginais] = useState<ICurso[]>([]);
   const [cursos, setCursos] = useState<{ label: string; value: string }[]>([]);
   const [loading, setLoading] = useState(false);
+  const cargaHorariaRef = useRef<TextInput>(null);
 
   const listaSemestres = React.useMemo(() => {
     const cursoSelecionado = cursosOriginais.find(
@@ -132,9 +133,9 @@ export function Disciplina() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Input label="Nome da Disciplina" value={nome} onChangeText={setNome} placeholder="Ex: Programação Mobile" errorMessage={error && nome === "" ? error : null} />
+      <Input label="Nome da Disciplina" value={nome} onChangeText={setNome} placeholder="Ex: Programação Mobile" errorMessage={error && nome === "" ? error : null} nextRef={cargaHorariaRef} />
       
-      <Input label="Carga Horária (horas)" value={cargaHoraria} onChangeText={setCargaHoraria} keyboardType="numeric" placeholder="Ex: 80" errorMessage={error && cargaHoraria === "" ? error : undefined} />
+      <Input label="Carga Horária (horas)" value={cargaHoraria} onChangeText={setCargaHoraria} keyboardType="numeric" placeholder="Ex: 80" errorMessage={error && cargaHoraria === "" ? error : undefined} ref={cargaHorariaRef} returnKeyType="done" />
 
       <Select
         label="Curso"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   Alert,
   ActivityIndicator,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
 import { COLORS } from "../styles/theme";
 import { Input } from "../components/Input";
@@ -19,6 +20,7 @@ export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const passwordRef = useRef<TextInput>(null);
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
@@ -57,6 +59,7 @@ export function Login() {
         autoCapitalize="none"
         keyboardType="email-address"
         editable={!loading}
+        nextRef={passwordRef}
       />
 
       <Input
@@ -66,6 +69,9 @@ export function Login() {
         value={password}
         onChangeText={setPassword}
         editable={!loading}    
+        ref={passwordRef}
+        returnKeyType="done"
+        onSubmitEditing={handleLogin}
       />
 
       {loading ? (

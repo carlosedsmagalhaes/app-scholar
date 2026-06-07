@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { View, StyleSheet, ScrollView, Alert, Text } from "react-native";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import { View, StyleSheet, ScrollView, Alert, Text, TextInput } from "react-native";
 import Loader from "../components/Loader";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { COLORS } from "../styles/theme";
@@ -21,6 +21,7 @@ export function LancamentoNota() {
   const [nota1, setNota1] = useState("");
   const [nota2, setNota2] = useState("");
   const [loading, setLoading] = useState(false);
+  const nota2Ref = useRef<TextInput>(null);
 
   useEffect(() => {
     async function loadResources() {
@@ -128,6 +129,7 @@ export function LancamentoNota() {
         value={nota1}
         onChangeText={setNota1}
         keyboardType="numeric"
+        nextRef={nota2Ref}
       />
 
       <Input
@@ -136,6 +138,9 @@ export function LancamentoNota() {
         value={nota2}
         onChangeText={setNota2}
         keyboardType="numeric"
+        ref={nota2Ref}
+        returnKeyType="done"
+        onSubmitEditing={handleSave}
       />
 
       <Button title={"Confirmar"} onPress={handleSave} disabled={loading} />

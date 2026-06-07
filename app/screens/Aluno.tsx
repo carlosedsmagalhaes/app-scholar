@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { ScrollView, StyleSheet, View, Alert, Text } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { ScrollView, StyleSheet, View, Alert, Text, TextInput } from "react-native";
 import Loader from "../components/Loader";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
@@ -47,6 +47,14 @@ export function Aluno() {
   const [listaCidades, setListaCidades] = useState<
     { label: string; value: string }[]
   >([]);
+
+  const matriculaRef = useRef<TextInput>(null);
+  const emailRef = useRef<TextInput>(null);
+  const telefoneRef = useRef<TextInput>(null);
+  const cepRef = useRef<TextInput>(null);
+  const enderecoRef = useRef<TextInput>(null);
+  const numeroRef = useRef<TextInput>(null);
+  const bairroRef = useRef<TextInput>(null);
 
   const isInitialLoad = React.useRef(true);
 
@@ -237,6 +245,7 @@ export function Aluno() {
         onChangeText={setNome}
         placeholder="Digite o nome completo"
         errorMessage={error && nome === "" ? error : null}
+        nextRef={matriculaRef}
       />
       <Input
         label="Matrícula"
@@ -245,6 +254,8 @@ export function Aluno() {
         placeholder="Digite a matrícula"
         keyboardType="numeric"
         errorMessage={error && matricula === "" ? error : null}
+        ref={matriculaRef}
+        nextRef={emailRef}
       />
 
       <Select
@@ -276,6 +287,8 @@ export function Aluno() {
         placeholder="Digite o email"
         keyboardType="email-address"
         errorMessage={error && email === "" ? error : null}
+        ref={emailRef}
+        nextRef={telefoneRef}
       />
       <Input
         label="Telefone"
@@ -283,6 +296,8 @@ export function Aluno() {
         onChangeText={setTelefone}
         placeholder="Digite o telefone"
         keyboardType="phone-pad"
+        ref={telefoneRef}
+        nextRef={cepRef}
       />
       <Input
         label="CEP"
@@ -290,12 +305,16 @@ export function Aluno() {
         onChangeText={setCep}
         placeholder="Digite o CEP"
         keyboardType="numeric"
+        ref={cepRef}
+        nextRef={enderecoRef}
       />
       <Input
         label="Endereço"
         value={endereco}
         onChangeText={setEndereco}
         placeholder="Digite o endereço"
+        ref={enderecoRef}
+        nextRef={numeroRef}
       />
       <Input
         label="Número"
@@ -303,12 +322,16 @@ export function Aluno() {
         onChangeText={setNumero}
         placeholder="Digite o número"
         keyboardType="numeric"
+        ref={numeroRef}
+        nextRef={bairroRef}
       />
       <Input
         label="Bairro"
         value={bairro}
         onChangeText={setBairro}
         placeholder="Digite o bairro"
+        ref={bairroRef}
+        returnKeyType="done"
       />
       <Select
         label="Estado"

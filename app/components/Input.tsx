@@ -6,12 +6,17 @@ import { Ionicons } from '@expo/vector-icons';
 interface InputProps extends TextInputProps {
   label: string;
   errorMessage?: string | null;
+  nextRef?: React.RefObject<TextInput | null>;
 }
 
-export function Input({ label, errorMessage, secureTextEntry, ...rest }: InputProps) {
+export const Input = React.forwardRef<TextInput, InputProps>(function Input(
+  { label, errorMessage, secureTextEntry, nextRef, returnKeyType, blurOnSubmit, onSubmitEditing, ...rest },
+  ref,
+) {
   const [passwordHidden, setPasswordHidden] = useState(true);
 
   const isPasswordInput = secureTextEntry;
+  const shouldMoveToNext = !!nextRef?.current;
 
   return (
     <View style={styles.container}>
@@ -19,6 +24,7 @@ export function Input({ label, errorMessage, secureTextEntry, ...rest }: InputPr
       
       <View style={styles.inputContainer}>
         <TextInput
+          ref={ref}
           style={[
             styles.input,
             errorMessage ? styles.inputError : null,
@@ -26,6 +32,12 @@ export function Input({ label, errorMessage, secureTextEntry, ...rest }: InputPr
           ]}
           placeholderTextColor="#999"
           secureTextEntry={isPasswordInput ? passwordHidden : false}
+          returnKeyType={returnKeyType ?? (shouldMoveToNext ? 'next' : 'done')}
+          blurOnSubmit={blurOnSubmit ?? !shouldMoveToNext}
+          onSubmitEditing={(event) => {
+            onSubmitEditing?.(event);
+            nextRef?.current?.focus();
+          }}
           {...rest}
         />
 
@@ -46,7 +58,7 @@ export function Input({ label, errorMessage, secureTextEntry, ...rest }: InputPr
       {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: { width: '100%', marginBottom: 16 },

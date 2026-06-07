@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { ScrollView, StyleSheet, Alert, Text } from "react-native";
+import React, { useRef, useState } from "react";
+import { ScrollView, StyleSheet, Alert, Text, TextInput } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
@@ -15,6 +15,8 @@ export function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const novaSenhaRef = useRef<TextInput>(null);
+  const confirmarSenhaRef = useRef<TextInput>(null);
 
   async function handleReset() {
     if (!token || !novaSenha || !confirmarSenha) {
@@ -55,6 +57,7 @@ export function ResetPassword() {
         onChangeText={setToken}
         placeholder="Cole o token aqui"
         errorMessage={error && token === "" ? error : null}
+        nextRef={novaSenhaRef}
       />
       <Input
         label="Nova Senha"
@@ -62,6 +65,8 @@ export function ResetPassword() {
         onChangeText={setNovaSenha}
         secureTextEntry
         errorMessage={error && novaSenha === "" ? error : null}
+        ref={novaSenhaRef}
+        nextRef={confirmarSenhaRef}
       />
       <Input
         label="Confirmar Senha"
@@ -69,6 +74,9 @@ export function ResetPassword() {
         onChangeText={setConfirmarSenha}
         secureTextEntry
         errorMessage={error && confirmarSenha === "" ? error : null}
+        ref={confirmarSenhaRef}
+        returnKeyType="done"
+        onSubmitEditing={handleReset}
       />
 
       <Button title={"Confirmar"} onPress={handleReset} loading={loading} disabled={loading} />

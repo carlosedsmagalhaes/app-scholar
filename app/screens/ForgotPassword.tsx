@@ -52,6 +52,8 @@ export function ForgotPassword() {
         keyboardType="email-address"
         autoCapitalize="none"
         errorMessage={error && email === "" ? error : null}
+        returnKeyType="done"
+        onSubmitEditing={handleSendEmail}
       />
 
       <Button 
