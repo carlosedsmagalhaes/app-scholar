@@ -70,6 +70,10 @@ npx prisma db seed
 - Ajustar o `tsconfig.json` com `moduleResolution: "nodenext"` para suporte ao Prisma 7 e arquivos de configuração `.ts`.
 - Remover a linha `url` do bloco `datasource` no `schema.prisma`.
 
+## 🔗 Links do Projeto
+* **Apresentação:** [Demonstração do projeto](https://youtu.be/r45FKyoPgtQ)
+* **APK para download:** [Download do aplicativo](https://expo.dev/accounts/carlos_magalhaes/projects/app-scholar/builds/04f749b6-1634-4338-a19f-1652e1e0a6c3)
+
 ## 🗄️ Modelagem do Banco de Dados
 O sistema utiliza as seguintes tabelas principais:
 * `Usuario`: Credenciais e perfis (aluno/professor/admin).
