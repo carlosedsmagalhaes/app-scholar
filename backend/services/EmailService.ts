@@ -83,7 +83,7 @@ class EmailService {
 
 export default new EmailService();
 
-const emailService = new EmailService();
+/* const emailService = new EmailService();
 const resultado = async () => {
   await emailService.sendWelcomeEmail(
     "carlos123cadu12355@gmail.com",
@@ -95,5 +95,5 @@ resultado().then(() => {
   console.log("Email enviado com sucesso!");
 }).catch((error) => {
   console.error("Erro ao enviar email:", error);
-});
+}); */
 
