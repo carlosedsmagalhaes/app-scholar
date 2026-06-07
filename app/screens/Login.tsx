@@ -51,7 +51,7 @@ export function Login() {
       <Text style={styles.title}>App Scholar</Text>
 
       <Input
-        label="Usuário ou E-mail"
+        label="E-mail"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -62,10 +62,10 @@ export function Login() {
       <Input
         label="Senha"
         placeholder="Digite sua senha"
+        secureTextEntry={true}
         value={password}
         onChangeText={setPassword}
-        secureTextEntry={true}
-        editable={!loading}
+        editable={!loading}    
       />
 
       {loading ? (
