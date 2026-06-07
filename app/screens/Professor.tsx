@@ -1,5 +1,5 @@
-import React, { useState, useEffect, use } from "react";
-import { ScrollView, StyleSheet, View, Alert } from "react-native";
+import React, { useState, useEffect, use, useRef } from "react";
+import { ScrollView, StyleSheet, View, Alert, TextInput } from "react-native";
 import Loader from "../components/Loader";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
