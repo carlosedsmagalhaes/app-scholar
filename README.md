@@ -72,6 +72,7 @@ npx prisma db seed
 
 ## 🔗 Links do Projeto
 * **Apresentação:** [Demonstração do projeto](https://youtu.be/r45FKyoPgtQ)
+* **Apresentação do código-fonte:** [Breve demonstração do código-fonte](https://youtu.be/8dnticig8tM)
 * **APK para download:** [Download do aplicativo](https://expo.dev/accounts/carlos_magalhaes/projects/app-scholar/builds/04f749b6-1634-4338-a19f-1652e1e0a6c3)
 
 ## 🗄️ Modelagem do Banco de Dados
