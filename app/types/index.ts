@@ -82,3 +82,10 @@ export interface Usuario {
   senha: string;
   perfil: "ALUNO" | "PROFESSOR" | "ADMIN";
 }
+
+export interface Aviso {
+  id: number;
+  titulo: string;
+  descricao:string;
+  prioridade:   "URGENTE" | "IMPORTANTE" | "INFORMATIVO"
+}

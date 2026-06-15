@@ -17,6 +17,12 @@ enum STATUS {
   INATIVO
 }
 
+enum Prioridade {
+  URGENTE
+  IMPORTANTE
+  INFORMATIVO
+}
+
 model Usuario {
   id        Int @id @default(autoincrement())
   email     String @unique
@@ -108,6 +114,14 @@ model Area {
   descricao String
   professores Professor[]
   status      STATUS @default(ATIVO) 
+}
+
+model Aviso {
+  id  Int @id @default(autoincrement())
+  titulo  String
+  descricao String
+  prioridade  Prioridade @default(INFORMATIVO)
+  criado_em  DateTime   @default(now())
 }
 
 model Professor_Disciplina {

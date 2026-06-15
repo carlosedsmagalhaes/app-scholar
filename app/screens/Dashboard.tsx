@@ -56,6 +56,12 @@ export function Dashboard() {
             navigation.navigate("ListBoletim");
           }}
         />
+        <MenuCard
+          title="Avisos"
+          onPress={() => {
+            navigation.navigate("ListAviso");
+          }}
+        />
       </View>
     </ScrollView>
   );

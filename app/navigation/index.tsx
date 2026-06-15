@@ -12,6 +12,8 @@ import { ListDisciplina } from "../screens/ListDisciplina";
 import { Disciplina } from "../screens/Disciplina";
 import { ListBoletim } from "../screens/ListBoletim";
 import { LancamentoNota } from "../screens/LancamentoNota";
+import { ListAviso } from "../screens/ListAviso";
+import { Aviso } from "../screens/Aviso";
 import { ForgotPassword } from "../screens/ForgotPassword";
 import { ResetPassword } from "../screens/ResetPassword";
 import { RootStackParamList } from "./types";
@@ -136,6 +138,22 @@ export function Routes() {
                 title: route.params?.nota
                   ? "Editar Nota"
                   : "Lançamento de Nota",
+              })}
+            />
+
+
+            <Stack.Screen
+              name="ListAviso"
+              component={ListAviso}
+              options={{ title: "Avisos" }}
+            />
+            <Stack.Screen
+              name="Aviso"
+              component={Aviso}
+              options={({ route }) => ({
+                title: route.params?.id
+                  ? "Editar Aviso"
+                  : "Cadastro de Aviso ",
               })}
             />
           </>
